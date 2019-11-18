@@ -23,23 +23,13 @@
             <artifactId>zap-microservices-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+            <version>4.2.2</version>
+        </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>myMavenRepoZapRead</id>
-            <url>${myMavenRepoZapReadUrl}</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
-        </repository>
-    </repositories>
+
     <build>
         <finalName>zap-comprovantes</finalName>
         <plugins>
