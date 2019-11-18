@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+      <server>
+          <id>myMavenRepoZapRead</id>
+          <username>${env.REPO_UN_READ_USER}</username>
+          <password>${env.REPO_UN_READ_PASS}</password>
+      </server>
+  </servers>
+
+  <mirrors>
+  </mirrors>
+
+  <profiles>
+        <profile>
+            <id>myMavenRepoZapRead</id>
+            <activation>
+                <property>
+                    <name>!doNotUseMyMavenRepo</name>
+                </property>
+            </activation>
+            <properties>
+                <myMavenRepoUniproofReadUrl>${env.REPO_UN_READ_URL}</myMavenRepoUniproofReadUrl>
+            </properties>
+        </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>myMavenRepoZapRead</activeProfile>
+  </activeProfiles>
+</settings>

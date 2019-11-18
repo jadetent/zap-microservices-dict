@@ -1,0 +1,60 @@
+## Configuração Default da Aplicação ##
+
+server:
+  port: 8086
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    statusPageUrlPath: http://${server.host}:${server.port}/actuator/info
+    healthCheckUrlPath: http://${server.host}:${server.port}/actuator/health
+  client:
+    service-url:
+      defaultZone: http://${eureka.host}:${eureka.port}/${eureka.name}/
+    register-with-eureka: true
+    healthcheck:
+      enabled: true
+
+spring:
+  application:
+    name: zap-comprovantes
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        ddl-auto: update
+        temp:
+          use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+  jmx:
+    enabled: false
+  datasource:
+    url: jdbc:postgresql://${database.host}:${database.port}/${database.name}?ApplicationName=${spring.application.name}
+    username: ${database.username}
+    password: ${database.password}
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 3
+
+logging:
+  level:
+    root: ERROR
+    com.zap.contadigital: WARN
+    com.sample.feign.demofeigncustomconfig: ERROR
+    org.springframework.web.client: ERROR
+    org.springframework.security.oauth2: ERROR
+
+## Actuator = Info, Health ##
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+info:
+  app:
+    name: ${spring.application.name}
+    version: 1.0.0
+    description: Comprovantes

@@ -1,0 +1,32 @@
+## Configuração Local (Máquina do Desenvolvedor) ##
+
+server:
+  host: localhost
+
+eureka:
+  host: localhost
+  port: 8081
+  name: eureka
+
+database:
+  host: contazap-hml-db01.crasuwtpbtmk.us-east-1.rds.amazonaws.com
+  port: 5432
+  name: zap_webservices
+  username: contazaphm
+  password: JFJSgqq2LYmjQGp1KMG
+
+endpoint:
+  matera-server: https://contazap-mp-api.matera.com
+  matera-edge: https://contazap-mp-edge.matera.com
+
+encrypt:
+  api-access-key: 0E5B9DBE-FF63-4071-A3DB-176017917B38
+  secret-Key: B882F377-82AB-4649-88AF-BC0A32D43E95
+
+logging:
+  level:
+    root: INFO
+    com.zap.contadigital: TRACE
+    com.sample.feign.demofeigncustomconfig: INFO
+    org.springframework.web.client: INFO
+    org.springframework.security.oauth2: INFO
