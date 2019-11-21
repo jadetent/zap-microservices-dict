@@ -2,37 +2,24 @@ package com.zap.contadigital.comprovantes.service;
 
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
-
-import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
-
-
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 import org.springframework.stereotype.Service;
-
-import java.awt.*;
-import java.net.MalformedURLException;
-
 
 @Service
 public class ComprovanteService {
     public void getLogo() throws Exception {
         String dest = "/home/comprovantes/transferencia.pdf";
         PdfWriter writer = new PdfWriter(dest);
-
         PdfDocument pdf = new PdfDocument(writer);
-
         Document document = new Document(pdf);
-
         String imFile = "/home/comprovantes/logo.jpg";
         ImageData data = ImageDataFactory.create(imFile);
 
