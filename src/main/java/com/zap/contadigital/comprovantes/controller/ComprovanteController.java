@@ -59,7 +59,25 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] p2p() throws Exception {
-        String comprovante = service.gerarComprovanteMesmoFavorecido();
+        String comprovante = service.gerarComprovanteP2P();
+        InputStream in= new FileInputStream(new File(comprovante));;
+        return IOUtils.toByteArray(in);
+    }
+    @GetMapping(
+            value = "/pagamento",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody byte[] pagamento() throws Exception {
+        String comprovante = service.gerarComprovantePagamento();
+        InputStream in= new FileInputStream(new File(comprovante));;
+        return IOUtils.toByteArray(in);
+    }
+    @GetMapping(
+            value = "/recarga",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody byte[] recarga() throws Exception {
+        String comprovante = service.gerarComprovanteRecarga();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
