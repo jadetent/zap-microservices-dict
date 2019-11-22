@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/comprovantes")
 public class ComprovanteController {
+    File file = new File("/home/comprovantes", "transferencia.pdf");
     @Autowired
     private ComprovanteService service;
     @GetMapping("/text")
@@ -23,8 +24,7 @@ public class ComprovanteController {
     }
     @GetMapping(value = "/pdf")
     public @ResponseBody byte[] getPdf() throws IOException {
-        InputStream in = new FileInputStream(new File("/dev/comprovante.pdf"));
-        //.getResourceAsStream("/dev/comprovante.pdf");
+        InputStream in = new FileInputStream(file);
         return IOUtils.toByteArray(in);
     }
     @GetMapping(
@@ -32,42 +32,35 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] getPdfWithMediaType() throws IOException {
-        InputStream in = new FileInputStream(new File("/dev/comprovante.pdf"));
+        InputStream in = new FileInputStream(file);
         return IOUtils.toByteArray(in);
     }
 
     @GetMapping(
-            value = "/estatico-pdf",
+            value = "/other",
             produces = MediaType.APPLICATION_PDF_VALUE
     )
-    public @ResponseBody byte[] transferencia() throws Exception {
-        service.getLogo();
-        File file = new File("/home/comprovantes", "transferencia.pdf");
-        InputStream in= new FileInputStream(file);;
+    public @ResponseBody byte[] other() throws Exception {
+        String comprovante = service.gerarComprovanteOutroFavorecido();
+        InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
-        /*
-        File file = new File("home", "comprovante.pdf");
-        Document document = new Document();
-
-        try {
-            PdfWriter.getInstance(document, new FileOutputStream(file));
-            document.open();
-            // adicionando um parágrafo ao documento
-            document.add(new Paragraph("Gerando um PDF usando iText em Java"));
-            // adicionando um parágrafo com fonte diferente ao arquivo
-            document.add(new Paragraph("Adicionando outro paragrafo", FontFactory.getFont(FontFactory.COURIER, 12)));
-            document.close();
-            in = new FileInputStream(file);
-        } catch(DocumentException de) {
-            System.err.println(de.getMessage());
-        } catch(IOException ioe) {
-            System.err.println(ioe.getMessage());
-        } finally {
-            document.close();
-        }
-
-        */
-
     }
-
+    @GetMapping(
+            value = "/same",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody byte[] same() throws Exception {
+        String comprovante = service.gerarComprovanteMesmoFavorecido();
+        InputStream in= new FileInputStream(new File(comprovante));;
+        return IOUtils.toByteArray(in);
+    }
+    @GetMapping(
+            value = "/p2p",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody byte[] p2p() throws Exception {
+        String comprovante = service.gerarComprovanteMesmoFavorecido();
+        InputStream in= new FileInputStream(new File(comprovante));;
+        return IOUtils.toByteArray(in);
+    }
 }

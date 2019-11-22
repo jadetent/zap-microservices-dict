@@ -13,38 +13,91 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.VerticalAlignment;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class ComprovanteService {
-    public void getLogo() throws Exception {
-        String dest = "/home/comprovantes/transferencia.pdf";
-        PdfWriter writer = new PdfWriter(dest);
-        PdfDocument pdf = new PdfDocument(writer);
-        Document document = new Document(pdf);
-        String imFile = "/home/comprovantes/logo.jpg";
-        ImageData data = ImageDataFactory.create(imFile);
-
-        Image image = new Image(data);
+    private String imFile = "/home/comprovantes/logo.jpg";
+    private final String TRACOS="-------------------------------------------------------------------------------------------------";
+    private String getComprovante(){
+        String dest = "/home/comprovantes/comprovante" + new Date().getTime() + ".pdf";
+        return dest;
+    }
+    public Table criarCabecalho(String transacao) throws Exception {
+        ImageData imageData = ImageDataFactory.create(imFile);
+        Image image = new Image(imageData);
         Paragraph p = new Paragraph().add(image);
         Table table = new Table(3);
         Cell logo = new Cell(3, 1).add(p).setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE);
         table.addCell(logo);
-        table.addCell(criarCelula(1,2,"Comprovante de Transferência",12).setBold());
-        table.addCell(criarCelula(1,2,"Data Transação: 19/11/2019 17:00"));
-        table.addCell(criarCelula(1,2,"Autenticação: AX155AS65466AQSDAS854Q%"));
-        document.add(table);
-
-        document.add(detalheTransacao("Conta Origem - Telefone","1234566"));
-        document.add(detalheTransacao("Conta Destino - Telefone","98785646"));
-        document.add(detalheTransacao("Valor","R$ 122,33"));
-        document.close();
-
-        System.out.println("Image added");
+        table.addCell(criarCelula(1,2,"CONTA ZAP - CONTA DIGYTAL"));
+        table.addCell(criarCelula(1,2,transacao));
+        table.addCell(criarCelula(1,2,"TRANSAÇÃO: F191C348-4D3D-BD5B-6B09-9DC3C9128D24"));
+        return table;
     }
-    private Paragraph detalheTransacao(String campo, String valor){
+    public String gerarComprovanteOutroFavorecido() throws Exception {
+        String comprovante = getComprovante();
+        PdfWriter writer = new PdfWriter(comprovante);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+        document.add(criarCabecalho("TRANSFERENCIA ENTRE CONTAS"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("CLIENTE: ","CONTA ZAP - SA"));
+        document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("FAVORECIDO",""));
+        document.add(criarCelula("NOME: ","LUCAS SILVA PEREIRA"));
+        document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
+        document.add(criarCelula("VALOR: ","1.234,56"));
+        document.add(criarCelula("DATA: ","22/11/2019"));
+        document.add(criarCelula(TRACOS,""));
+        document.close();
+        return comprovante;
+    }
+    public String gerarComprovanteMesmoFavorecido() throws Exception {
+        String comprovante = getComprovante();
+        PdfWriter writer = new PdfWriter(comprovante);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+        document.add(criarCabecalho("TRANSFERENCIA ENTRE CONTAS DE MESMO FAVORECIDO"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("CLIENTE: ","CONTA ZAP - SA"));
+        document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("FAVORECIDO",""));
+        document.add(criarCelula("NOME: ","CONTA ZAP - SA"));
+        document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
+        document.add(criarCelula("VALOR: ","1.234,56"));
+        document.add(criarCelula("DATA: ","22/11/2019"));
+        document.add(criarCelula(TRACOS,""));
+        document.close();
+        return comprovante;
+    }
+    public String gerarComprovanteP2P() throws Exception {
+        String comprovante = getComprovante();
+        PdfWriter writer = new PdfWriter(comprovante);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+        document.add(criarCabecalho("TRANSFERENCIA P2P"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("CLIENTE: ","CONTA ZAP - SA"));
+        document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("FAVORECIDO",""));
+        document.add(criarCelula("TELEFONE: ","11 91234 - 5678"));
+        document.add(criarCelula("VALOR: ","1.234,56"));
+        document.add(criarCelula("DATA: ","22/11/2019"));
+        document.add(criarCelula(TRACOS,""));
+        document.close();
+        return comprovante;
+    }
+    private Paragraph criarCelula(String campo, String valor){
         Paragraph p= new Paragraph();
         p.setFontSize(8);
         p.setFirstLineIndent(55);
-        p.add(campo + ":" + valor);
+        p.add(campo + valor);
         return p;
     }
     private Cell criarCelula(String text){
