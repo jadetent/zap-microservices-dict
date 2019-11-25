@@ -116,7 +116,7 @@ public class ComprovanteService {
         document.close();
         return comprovante;
     }
-    public String gerarComprovanteRecarga() throws Exception {
+    public String gerarComprovanteRecargaBilheteUnico() throws Exception {
         String comprovante = getComprovante();
         PdfWriter writer = new PdfWriter(comprovante);
         PdfDocument pdf = new PdfDocument(writer);
@@ -133,6 +133,25 @@ public class ComprovanteService {
         document.add(criarCelula("VALOR RECARGA: ","R$ 100,00"));
         document.add(criarCelula("SALDO ANTERIOR: ","R$ 10,00 "));
         document.add(criarCelula("SALDO ATUAL: ","R$ 110,00"));
+        document.add(criarCelula(TRACOS,""));
+        document.close();
+        return comprovante;
+    }
+    public String gerarComprovanteRecargaCelular() throws Exception {
+        String comprovante = getComprovante();
+        PdfWriter writer = new PdfWriter(comprovante);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+        document.add(criarCabecalho("RECARGA CELULAR"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("CLIENTE: ","LUCIO ALVES PEREIRA"));
+        // document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula(TRACOS,""));
+        document.add(criarCelula("RECARGA: ","CELULAR"));
+        document.add(criarCelula("N° TELEFONE: ","(11) 91647-1289"));
+        document.add(criarCelula("N° DOCUMENTO: ","708545"));
+        document.add(criarCelula("DATA RECARGA: ","22/11/2019"));
+        document.add(criarCelula("VALOR RECARGA: ","R$ 20,00"));
         document.add(criarCelula(TRACOS,""));
         document.close();
         return comprovante;

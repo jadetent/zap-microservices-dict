@@ -73,11 +73,20 @@ public class ComprovanteController {
         return IOUtils.toByteArray(in);
     }
     @GetMapping(
-            value = "/recarga",
+            value = "/recarga/bilhete",
             produces = MediaType.APPLICATION_PDF_VALUE
     )
-    public @ResponseBody byte[] recarga() throws Exception {
-        String comprovante = service.gerarComprovanteRecarga();
+    public @ResponseBody byte[] recargaBilhete() throws Exception {
+        String comprovante = service.gerarComprovanteRecargaBilheteUnico();
+        InputStream in= new FileInputStream(new File(comprovante));;
+        return IOUtils.toByteArray(in);
+    }
+    @GetMapping(
+            value = "/recarga/celular",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody byte[] recargaCelular() throws Exception {
+        String comprovante = service.gerarComprovanteRecargaCelular();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
