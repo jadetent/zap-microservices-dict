@@ -32,7 +32,7 @@ public class ComprovanteService {
         table.addCell(logo);
         table.addCell(criarCelula(1,2,"CONTA ZAP - CONTA DIGITAL"));
         table.addCell(criarCelula(1,2,transacao));
-        table.addCell(criarCelula(1,2,"TRANSAÇÃO: F191C348-4D3D-BD5B-6B09-9DC3C9128D24"));
+        table.addCell(criarCelula(1,2,"PROTOCOLO: F191C348-4D3D-BD5B-6B09-9DC3C9128D24"));
         return table;
     }
     public String gerarComprovanteOutroFavorecido() throws Exception {
@@ -43,11 +43,12 @@ public class ComprovanteService {
         document.add(criarCabecalho("TRANSFERENCIA ENTRE CONTAS"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("CLIENTE: ","CONTA ZAP - SA"));
-        document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("FAVORECIDO",""));
-        document.add(criarCelula("NOME: ","LUCAS SILVA PEREIRA"));
-        //document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("NOME: ","LUIZ ALVES DA SILVA"));
+        document.add(criarCelula("BANCO: ","BANCO DO BRASIL"));
+        document.add(criarCelula("AGENCIA: 123-4 ","CONTA:567-8"));
         document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula("VALOR: ","1.234,56"));
         document.add(criarCelula("DATA: ","22/11/2019"));
@@ -63,11 +64,12 @@ public class ComprovanteService {
         document.add(criarCabecalho("TRANSFERENCIA ENTRE CONTAS DE MESMO FAVORECIDO"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("CLIENTE: ","CONTA ZAP - SA"));
-        document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("FAVORECIDO",""));
         document.add(criarCelula("NOME: ","CONTA ZAP - SA"));
-       // document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("BANCO: ","BANCO DO BRASIL"));
+        document.add(criarCelula("AGENCIA: 123-4 ","CONTA:567-8"));
         document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula("VALOR: ","1.234,56"));
         document.add(criarCelula("DATA: ","22/11/2019"));
@@ -83,7 +85,7 @@ public class ComprovanteService {
         document.add(criarCabecalho("TRANSFERENCIA P2P"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("CLIENTE: ","CONTA ZAP - SA"));
-        // document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("FAVORECIDO",""));
         document.add(criarCelula("TELEFONE: ","11 91234 - 5678"));
@@ -101,7 +103,7 @@ public class ComprovanteService {
         document.add(criarCabecalho("COMRPOVANTE DE PAGAMENTO"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("CLIENTE: ","LUCIO ALVES PEREIRA"));
-        // document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("CODIGO DE BARRAS: ","13546546464876548654876546548"));
         document.add(criarCelula("BANCO CEDENTE: ","CONTA ZAP - DIGITAL"));
@@ -124,7 +126,7 @@ public class ComprovanteService {
         document.add(criarCabecalho("RECARGA BILHETE ÚNICO"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("CLIENTE: ","LUCIO ALVES PEREIRA"));
-        // document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("RECARGA: ","BILHETE UNICO - SPTRANS"));
         document.add(criarCelula("N° BILHETE: ","123456"));
@@ -145,9 +147,10 @@ public class ComprovanteService {
         document.add(criarCabecalho("RECARGA CELULAR"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("CLIENTE: ","LUCIO ALVES PEREIRA"));
-        // document.add(criarCelula("CONTA: ","20FA48B8-9AC1-B414-5073-36FB291A0C78"));
+        document.add(criarCelula("CPF/CNPJ: ","123.456.789-10"));
         document.add(criarCelula(TRACOS,""));
         document.add(criarCelula("RECARGA: ","CELULAR"));
+        document.add(criarCelula("OPERADORA: ","TIM"));
         document.add(criarCelula("N° TELEFONE: ","(11) 91647-1289"));
         document.add(criarCelula("N° DOCUMENTO: ","708545"));
         document.add(criarCelula("DATA RECARGA: ","22/11/2019"));

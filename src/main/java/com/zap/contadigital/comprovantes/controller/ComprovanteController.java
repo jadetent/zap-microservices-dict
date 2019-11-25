@@ -1,16 +1,21 @@
 package com.zap.contadigital.comprovantes.controller;
 
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.zap.contadigital.comprovantes.service.ComprovanteService;
+import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.fit.pdfdom.PDFDomTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.util.Date;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/comprovantes")
@@ -90,4 +95,35 @@ public class ComprovanteController {
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
+    @GetMapping(
+            value = "/html",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody byte[] html() throws Exception {
+        TemplateBuilder templateBuilder = new TemplateBuilder();
+        templateBuilder.setParametro("titulo", "CONTA ZAP");
+        templateBuilder.setParametro("setor", "RECIBO");
+        templateBuilder.setParametro("assunto", "Comprovante");
+        templateBuilder.setParametro("mensagem", "Recibo de Pagamentos");
+        String conteudo=templateBuilder.getConteudo();
+        String html = "/home/comprovantes/comprovante.html";
+        String pdf = "/home/comprovantes/comprovante.pdf";
+        Writer fileWriter = new FileWriter(html);
+        fileWriter.write(conteudo);
+        fileWriter.close();
+
+        Document document = new Document();
+        PdfWriter writer = PdfWriter.getInstance(document,
+                new FileOutputStream(pdf));
+        document.open();
+        XMLWorkerHelper.getInstance().parseXHtml(writer, document,
+                new FileInputStream(html));
+        document.close();
+
+
+        InputStream in= new FileInputStream(new File(pdf));;
+        return IOUtils.toByteArray(in);
+    }
+
+
 }
