@@ -5,22 +5,24 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.zap.contadigital.comprovantes.service.ComprovanteService;
+import com.zap.contadigital.comprovantes.service.ComprovanteServiceIText;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.fit.pdfdom.PDFDomTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import org.springframework.web.bind.annotation.*;
 import java.io.*;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
 @RequestMapping("/comprovantes")
 public class ComprovanteController {
     File file = new File("/home/comprovantes", "transferencia.pdf");
+    @Autowired
+    private ComprovanteServiceIText serviceText;
     @Autowired
     private ComprovanteService service;
     @GetMapping("/text")
@@ -46,7 +48,7 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] other() throws Exception {
-        String comprovante = service.gerarComprovanteOutroFavorecido();
+        String comprovante = serviceText.gerarComprovanteOutroFavorecido();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
@@ -55,7 +57,7 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] same() throws Exception {
-        String comprovante = service.gerarComprovanteMesmoFavorecido();
+        String comprovante = serviceText.gerarComprovanteMesmoFavorecido();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
@@ -64,7 +66,7 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] p2p() throws Exception {
-        String comprovante = service.gerarComprovanteP2P();
+        String comprovante = serviceText.gerarComprovanteP2P();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
@@ -73,7 +75,7 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] pagamento() throws Exception {
-        String comprovante = service.gerarComprovantePagamento();
+        String comprovante = serviceText.gerarComprovantePagamento();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
@@ -82,7 +84,7 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] recargaBilhete() throws Exception {
-        String comprovante = service.gerarComprovanteRecargaBilheteUnico();
+        String comprovante = serviceText.gerarComprovanteRecargaBilheteUnico();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
@@ -91,7 +93,7 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] recargaCelular() throws Exception {
-        String comprovante = service.gerarComprovanteRecargaCelular();
+        String comprovante = serviceText.gerarComprovanteRecargaCelular();
         InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
@@ -119,9 +121,17 @@ public class ComprovanteController {
         XMLWorkerHelper.getInstance().parseXHtml(writer, document,
                 new FileInputStream(html));
         document.close();
-
-
         InputStream in= new FileInputStream(new File(pdf));;
+        return IOUtils.toByteArray(in);
+    }
+    @GetMapping(
+            value = "/p2p-template",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody byte[] p2pTemplate() throws Exception {
+        Map<String, String> parametros = new HashMap<String,String>();
+        String comprovante=service.comprovante("COMPROVANTE_P2P", parametros);
+        InputStream in= new FileInputStream(new File(comprovante));;
         return IOUtils.toByteArray(in);
     }
 
