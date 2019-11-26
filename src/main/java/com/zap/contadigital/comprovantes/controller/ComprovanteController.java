@@ -1,6 +1,4 @@
 package com.zap.contadigital.comprovantes.controller;
-
-
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.html.simpleparser.HTMLWorker;
@@ -132,6 +130,10 @@ public class ComprovanteController {
     )
     public @ResponseBody byte[] p2pTemplate() throws Exception {
         Map<String, String> parametros = new HashMap<String,String>();
+        parametros.put("protocolo","12331197098090910990");
+        parametros.put("cliente","LUCIA ALVES PEREIRA");
+        parametros.put("cpfCnpj","123.456.789-10");
+        parametros.put("operadora","TIM - SP");
         String comprovante=service.comprovanteTexto("COMPROVANTE_P2P", parametros);
         InputStream in= new FileInputStream(new File(comprovante));
         byte[] bytes=IOUtils.toByteArray(in);

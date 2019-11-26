@@ -12,9 +12,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.VerticalAlignment;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
-
 @Service
 public class ComprovanteServiceIText {
     private String imFile = "/home/comprovantes/logo.jpg";

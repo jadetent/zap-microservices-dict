@@ -10,7 +10,6 @@ import com.zap.contadigital.repository.ConfiguracaoRepository;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.*;
 import java.util.Map;
 
@@ -48,10 +47,9 @@ public class ComprovanteService {
         for (Map.Entry<String, String> entry : parametros.entrySet()) {
             templateBuilder.setParametro(entry.getKey(), entry.getValue());
         }
-
         String conteudo=templateBuilder.getConteudo(template);
         String pdf = "/home/comprovantes/comprovante.pdf";
-
+         /*
         Document document = new Document(PageSize.LETTER);
         PdfWriter.getInstance(document, new FileOutputStream(pdf));
         document.open();
@@ -62,6 +60,15 @@ public class ComprovanteService {
         HTMLWorker htmlWorker = new HTMLWorker(document);
         htmlWorker.parse(new StringReader(conteudo));
         document.close();
+         */
+        OutputStream file = new FileOutputStream(new File(pdf));
+        Document document = new Document();
+        PdfWriter writer = PdfWriter.getInstance(document, file);
+        document.open();
+        InputStream is = new ByteArrayInputStream(conteudo.getBytes());
+        XMLWorkerHelper.getInstance().parseXHtml(writer, document, is);
+        document.close();
+        file.close();
         return pdf;
     }
 }
