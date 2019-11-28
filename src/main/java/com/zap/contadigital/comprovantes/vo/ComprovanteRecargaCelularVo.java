@@ -1,6 +1,7 @@
 package com.zap.contadigital.comprovantes.vo;
 
 public class ComprovanteRecargaCelularVo {
+    private String idTransacao;
     private String protocolo;
     private String transacao;
     private String dataHora;
@@ -11,6 +12,14 @@ public class ComprovanteRecargaCelularVo {
     private String autenticacao;
     private String valor;
     private String mensagem;
+
+    public String getIdTransacao() {
+        return idTransacao;
+    }
+
+    public void setIdTransacao(String idTransacao) {
+        this.idTransacao = idTransacao;
+    }
 
     public String getProtocolo() {
         return protocolo;

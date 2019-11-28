@@ -1,5 +1,6 @@
 package com.zap.contadigital.comprovantes.controller;
 import com.zap.contadigital.comprovantes.service.ComprovanteService;
+import com.zap.contadigital.comprovantes.vo.ComprovanteRecargaCelularVo;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,16 +21,9 @@ public class ComprovanteController {
             produces = MediaType.APPLICATION_PDF_VALUE
     )
     public @ResponseBody byte[] recargaCelular() throws Exception {
-        Map<String, String> parametros = new HashMap<String,String>();
-        parametros.put("protocolo","F191C348-4D3D-BD5B-6B09-9DC3C9128D24");
-        parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
-        parametros.put("cpfCnpj","123.456.789-10");
-        parametros.put("operadora","TIM - SP");
-        parametros.put("telefone","(11) 99801-1234");
-        parametros.put("documento","12345678");
-        parametros.put("data","22/11/19");
-        parametros.put("valor","R$ 35,00");
-        byte[] bytes=service.comprovanteByteArray("COMPROVANTE_P2P", parametros);
+        ComprovanteRecargaCelularVo comprovante = new ComprovanteRecargaCelularVo();
+        comprovante.setIdTransacao("A7EE72D0-ECFD-7AB3-791A-FDB7CC01AE9C");
+        byte[] bytes=service.gerarComprovanteRecargaCelular(comprovante);
         return bytes;
     }
 
