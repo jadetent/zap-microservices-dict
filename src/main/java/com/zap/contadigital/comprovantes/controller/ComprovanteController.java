@@ -14,6 +14,7 @@ import java.util.Map;
 public class ComprovanteController {
     @Autowired
     private ComprovanteService service;
+
     @GetMapping(
             value = "/recarga-celular",
             produces = MediaType.APPLICATION_PDF_VALUE
@@ -27,12 +28,8 @@ public class ComprovanteController {
         parametros.put("telefone","(11) 99801-1234");
         parametros.put("documento","12345678");
         parametros.put("data","22/11/19");
-        parametros.put("valor","R$ 20,00");
-
-        String comprovante=service.comprovante("COMPROVANTE_P2P", parametros);
-        InputStream in= new FileInputStream(new File(comprovante));
-        byte[] bytes=IOUtils.toByteArray(in);
-        in.close();
+        parametros.put("valor","R$ 35,00");
+        byte[] bytes=service.comprovanteByteArray("COMPROVANTE_P2P", parametros);
         return bytes;
     }
 
