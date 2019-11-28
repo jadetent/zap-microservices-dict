@@ -18,18 +18,23 @@ public class ComprovanteService {
     private final String GRUPO="ZAP-COMPROVANTES";
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
         Map<String, String> parametros = new HashMap<String,String>();
-        parametros.put("protocolo","F191C348-4D3D-BD5B-6B09-9DC3C9128D24");
+        parametros.put("transacao","A7EE72D0-ECFD-7AB3-791A-FDB7CC01AE9C");
+        parametros.put("protocolo","0003206729");
         parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
+        parametros.put("terminal","228005");
+        parametros.put("agente","238804");
+        parametros.put("autenticacao","07656");
+        parametros.put("nsu","610761");
+        parametros.put("produto","TIM - SP");
         parametros.put("cpfCnpj","123.456.789-10");
-        parametros.put("operadora","TIM - SP");
         parametros.put("telefone","(11) 99801-1234");
         parametros.put("documento","12345678");
         parametros.put("data","22/11/19");
         parametros.put("valor","R$ 35,00");
-        return comprovanteByteArray("COMPROVANTE_P2P", parametros);
+        return comprovanteByteArray("COMPROVANTE_RECARGA_CELULAR", parametros);
     }
     private byte[] comprovanteByteArray(String nomeChave, Map<String, String> parametros)  throws Exception {
-        String template = configuracaoRepository.findOne("COMPROVANTE_P2P",GRUPO).getValor();
+        String template = configuracaoRepository.findOne(nomeChave,GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
 
         for (Map.Entry<String, String> entry : parametros.entrySet()) {
@@ -51,7 +56,7 @@ public class ComprovanteService {
     }
 
     private String comprovanteFile(String nomeChave, Map<String, String> parametros)  throws Exception {
-        String template = configuracaoRepository.findOne("COMPROVANTE_P2P",GRUPO).getValor();
+        String template = configuracaoRepository.findOne(nomeChave,GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
 
         for (Map.Entry<String, String> entry : parametros.entrySet()) {
