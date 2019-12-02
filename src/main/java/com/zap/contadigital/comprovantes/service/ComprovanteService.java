@@ -1,6 +1,7 @@
 package com.zap.contadigital.comprovantes.service;
 
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import com.zap.contadigital.comprovantes.vo.*;
 import com.zap.contadigital.repository.ConfiguracaoRepository;
@@ -17,6 +18,9 @@ public class ComprovanteService {
 
     private final String GRUPO="ZAP-COMPROVANTES";
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
+        if(comprovante.getIdTransacao().equals("999"))
+            throw new TransacaoNaoLocalizadaException(comprovante.getIdTransacao());
+
         Map<String, String> parametros = new HashMap<String,String>();
         parametros.put("transacao",comprovante.getIdTransacao());
         parametros.put("protocolo",comprovante.getProtocolo());
@@ -97,7 +101,7 @@ public class ComprovanteService {
         parametros.put("cpfCnpjFavorecido","123.456.789-11");
         parametros.put("valor","R$ 100,00");
         parametros.put("data","22/11/2019");
-        return comprovanteByteArray("COMPROVANTE_MESMA_TITULARIDADE", parametros);
+        return comprovanteByteArray("COMPROVANTE_OUTRA_TITULARIDADE", parametros);
     }
 
     private String alinhamento(String texto){

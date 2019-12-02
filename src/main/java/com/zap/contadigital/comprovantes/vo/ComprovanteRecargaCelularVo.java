@@ -3,7 +3,6 @@ package com.zap.contadigital.comprovantes.vo;
 public class ComprovanteRecargaCelularVo {
     private String idTransacao;
     private String protocolo;
-    private String transacao;
     private String dataHora;
     private String operadora;
     private String nsuOperadora;
@@ -23,10 +22,6 @@ public class ComprovanteRecargaCelularVo {
 
     public String getProtocolo() {
         return protocolo;
-    }
-
-    public String getTransacao() {
-        return transacao;
     }
 
     public String getDataHora() {
