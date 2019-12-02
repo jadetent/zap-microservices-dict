@@ -1,6 +1,6 @@
 package com.zap.contadigital.comprovantes.vo;
 
-public class ComprovanteTransferenciaOutraTitularidade {
+public class ComprovanteTransferenciaOutraTitularidadeVo {
     private String protocolo;
     private String cliente;
     private String cpfCnpj;

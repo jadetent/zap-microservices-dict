@@ -1,6 +1,7 @@
 package com.zap.contadigital.comprovantes.vo;
 
 public class ComprovantePagamentoVo {
+    private String idTransacao;
     private String protocolo;
     private String terminal;
     private String agente;
@@ -16,6 +17,14 @@ public class ComprovantePagamentoVo {
     private String dataPagamento;
     private String valorTitulo;
     private String valorCobrado;
+
+    public void setIdTransacao(String idTransacao) {
+        this.idTransacao = idTransacao;
+    }
+
+    public String getIdTransacao() {
+        return idTransacao;
+    }
 
     public String getProtocolo() {
         return protocolo;

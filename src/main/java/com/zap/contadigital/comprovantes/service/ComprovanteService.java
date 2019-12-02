@@ -2,7 +2,7 @@ package com.zap.contadigital.comprovantes.service;
 
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
-import com.zap.contadigital.comprovantes.vo.ComprovanteRecargaCelularVo;
+import com.zap.contadigital.comprovantes.vo.*;
 import com.zap.contadigital.repository.ConfiguracaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,8 @@ public class ComprovanteService {
     private final String GRUPO="ZAP-COMPROVANTES";
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
         Map<String, String> parametros = new HashMap<String,String>();
-        parametros.put("transacao","A7EE72D0-ECFD-7AB3-791A-FDB7CC01AE9C");
-        parametros.put("protocolo","0003206729");
+        parametros.put("transacao",comprovante.getIdTransacao());
+        parametros.put("protocolo",comprovante.getProtocolo());
         parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
         parametros.put("terminal","228005");
         parametros.put("agente","238804");
@@ -33,6 +33,77 @@ public class ComprovanteService {
         parametros.put("valor","R$ 35,00");
         return comprovanteByteArray("COMPROVANTE_RECARGA_CELULAR", parametros);
     }
+    public byte[] gerarComprovantePagamento(ComprovantePagamentoVo comprovante) throws Exception {
+        Map<String, String> parametros = new HashMap<String,String>();
+        parametros.put("protocolo",comprovante.getProtocolo());
+        parametros.put("transacao",comprovante.getIdTransacao());
+        parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
+        parametros.put("cpfCnpj","123.456.789-10");
+        parametros.put("terminal","228005");
+        parametros.put("agente","228005");
+        parametros.put("autenticacao","03207");
+        parametros.put("autorizacao","065474");
+        parametros.put("banco","BANCO BRADESCO S.A.");
+        parametros.put("codigoBarras","23793.38128  60014.678225 56000.063307  5 80810000002000");
+        parametros.put("beneficiario",alinhamento("BENEFICIARIO AMBIENTE HOMOLOGA"));
+        parametros.put("cpfCnpjBeneficiario",alinhamento("21.568.259/0001-00"));
+        parametros.put("pagador",alinhamento("PAGADOR AMBIENTE HOMOLOGACAO"));
+        parametros.put("cpfCnpjPagador",alinhamento("96.906.497/0001-00"));
+        parametros.put("dataVencimento",alinhamento("22/11/2019"));
+        parametros.put("dataPagamento",alinhamento("21/11/2019"));
+        parametros.put("valorTitulo",alinhamento("20,00"));
+        parametros.put("valorCobrado",alinhamento("20,00"));
+        return comprovanteByteArray("COMPROVANTE_PAGAMENTO", parametros);
+    }
+
+    public byte[] gerarComprovanteTransferenciaP2p(ComprovanteTransferenciaP2PVo comprovante) throws Exception {
+        Map<String, String> parametros = new HashMap<String,String>();
+        parametros.put("protocolo",comprovante.getProtocolo());
+        parametros.put("transacao",comprovante.getProtocolo());
+        parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
+        parametros.put("cpfCnpj","123.456.789-10");
+        parametros.put("telefone",alinhamento("(11) - 98564 - 1574"));
+        parametros.put("data",alinhamento("22/11/2019"));
+        parametros.put("valor",alinhamento("20,00"));
+        return comprovanteByteArray("COMPROVANTE_P2P", parametros);
+    }
+
+    public byte[] gerarComprovanteTransferenciaMesmaTitularidade(ComprovanteTransferenciaMesmaTitularidadeVo comprovante) throws Exception {
+        Map<String, String> parametros = new HashMap<String,String>();
+        parametros.put("protocolo",comprovante.getProtocolo());
+        parametros.put("transacao",comprovante.getProtocolo());
+        parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
+        parametros.put("cpfCnpj","123.456.789-10");
+        parametros.put("favorecido","LUCIA ALVES PEREIRA SILVA");
+        parametros.put("banco","BRANCO DO BRASIL");
+        parametros.put("agencia","0765-4");
+        parametros.put("conta","4165-9");
+        parametros.put("cpfCnpjFavorecido","123.456.789-10");
+        parametros.put("valor","R$ 100,00");
+        parametros.put("data","22/11/2019");
+        return comprovanteByteArray("COMPROVANTE_MESMA_TITULARIDADE", parametros);
+    }
+
+    public byte[] gerarComprovanteTransferenciaOutraTitularidade(ComprovanteTransferenciaOutraTitularidadeVo comprovante) throws Exception {
+        Map<String, String> parametros = new HashMap<String,String>();
+        parametros.put("protocolo",comprovante.getProtocolo());
+        parametros.put("transacao",comprovante.getProtocolo());
+        parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
+        parametros.put("cpfCnpj","123.456.789-10");
+        parametros.put("favorecido","MARIA LUZIA NOGUEIRA");
+        parametros.put("banco","BRANCO DO BRASIL");
+        parametros.put("agencia","0546-4");
+        parametros.put("conta","3351-9");
+        parametros.put("cpfCnpjFavorecido","123.456.789-11");
+        parametros.put("valor","R$ 100,00");
+        parametros.put("data","22/11/2019");
+        return comprovanteByteArray("COMPROVANTE_MESMA_TITULARIDADE", parametros);
+    }
+
+    private String alinhamento(String texto){
+        return String.format("%40s",texto.substring(0,Math.min(40,texto.length())));
+    }
+
     private byte[] comprovanteByteArray(String nomeChave, Map<String, String> parametros)  throws Exception {
         String template = configuracaoRepository.findOne(nomeChave,GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
