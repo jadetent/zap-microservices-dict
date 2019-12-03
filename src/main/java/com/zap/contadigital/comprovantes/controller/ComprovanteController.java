@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,19 +21,16 @@ public class ComprovanteController {
 
     @ApiOperation(value = "Comprovante de pagamento de Recarga de Celular", httpMethod = "GET",response = String.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Transação não Localizada", response = CustomErrorResponse.class),
+            @ApiResponse(code = 404, message = "Comprovante não localizado pelo id da transação", response = CustomErrorResponse.class),
             @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
     })
     @GetMapping(path = "/recarga-celular/{idTransacao}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity< byte[]> comprovanteRecargaCelular(@PathVariable("idTransacao") String idTransacao) throws Exception {
         ComprovanteRecargaCelularVo comprovante = new ComprovanteRecargaCelularVo();
         comprovante.setIdTransacao(idTransacao);
-        try {
-            byte[] bytes = service.gerarComprovanteRecargaCelular(comprovante);
-            return ResponseEntity.ok().body(bytes);
-        }catch (TransacaoNaoLocalizadaException tnle){
-            return ResponseEntity.notFound().build();
-        }
+        byte[] bytes = service.gerarComprovanteRecargaCelular(comprovante);
+        return new ResponseEntity<>(bytes, HttpStatus.OK);
+       // return ResponseEntity.ok().body(bytes);
     }
 
     @ApiOperation(value = "Comprovante de Pagamentos", httpMethod = "GET",response = String.class)

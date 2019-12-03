@@ -1,7 +1,11 @@
 package com.zap.contadigital.comprovantes.exception;
 
-public class TransacaoNaoLocalizadaException extends  Exception {
-    public TransacaoNaoLocalizadaException(String id){
-        super(String.format("Não existe transação com o id %s informado ", id));
+import com.zap.contadigital.exception.ContaException;
+import static com.zap.contadigital.enums.TipoInternalErrorCodesEnum.E422000;
+
+public class TransacaoNaoLocalizadaException extends ContaException {
+    public TransacaoNaoLocalizadaException(String idTransacao) {
+        super(E422000, idTransacao);
     }
 }
+
