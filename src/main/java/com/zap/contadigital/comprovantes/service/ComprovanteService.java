@@ -7,6 +7,7 @@ import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import com.zap.contadigital.comprovantes.vo.*;
 import com.zap.contadigital.repository.ConfiguracaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.*;
 import java.util.HashMap;
@@ -18,13 +19,15 @@ public class ComprovanteService {
     private ConfiguracaoRepository configuracaoRepository;
     @Autowired
     private QRCodeService qrCodeService;
+    @Value("${imagem}")
+    private String imagem;
     private final String GRUPO="ZAP-COMPROVANTES";
     public byte[] gerarQrCodeEstabelecimento(String conteudo) throws Exception {
         Map<String, Object> parametros = new HashMap<String,Object>();
         byte[] qrCode=qrCodeService.createQRCode(conteudo);
         File file = qrCodeService.createQRCodeFile(conteudo);
         parametros.put("qrcode", file.getAbsolutePath());
-        parametros.put("base64", Base64.encode(qrCode));
+        parametros.put("base64", "data:image/jpeg;base64," + imagem);
         return comprovanteByteArray("ESTABELECIMENTO_QRCODE", parametros);
     }
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
