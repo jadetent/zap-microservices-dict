@@ -15,13 +15,20 @@ import java.util.Map;
 public class ComprovanteService {
     @Autowired
     private ConfiguracaoRepository configuracaoRepository;
-
+    @Autowired
+    private QRCodeService qrCodeService;
     private final String GRUPO="ZAP-COMPROVANTES";
+    public byte[] gerarQrCodeEstabelecimento(String conteudo) throws Exception {
+        Map<String, Object> parametros = new HashMap<String,Object>();
+        byte[] qrCode=qrCodeService.createQRImage(conteudo);
+        parametros.put("qrcode", "c:\\dev\\zap.png");
+        return comprovanteByteArray("ESTABELECIMENTO_QRCODE", parametros);
+    }
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
         if(comprovante.getIdTransacao().equals("999"))
             throw new TransacaoNaoLocalizadaException(comprovante.getIdTransacao());
 
-        Map<String, String> parametros = new HashMap<String,String>();
+        Map<String, Object> parametros = new HashMap<String,Object>();
         parametros.put("transacao",comprovante.getIdTransacao());
         parametros.put("protocolo",comprovante.getProtocolo());
         parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
@@ -38,7 +45,7 @@ public class ComprovanteService {
         return comprovanteByteArray("COMPROVANTE_RECARGA_CELULAR", parametros);
     }
     public byte[] gerarComprovantePagamento(ComprovantePagamentoVo comprovante) throws Exception {
-        Map<String, String> parametros = new HashMap<String,String>();
+        Map<String, Object> parametros = new HashMap<String,Object>();
         parametros.put("protocolo",comprovante.getProtocolo());
         parametros.put("transacao",comprovante.getIdTransacao());
         parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
@@ -61,7 +68,7 @@ public class ComprovanteService {
     }
 
     public byte[] gerarComprovanteTransferenciaP2p(ComprovanteTransferenciaP2PVo comprovante) throws Exception {
-        Map<String, String> parametros = new HashMap<String,String>();
+        Map<String, Object> parametros = new HashMap<String,Object>();
         parametros.put("protocolo",comprovante.getProtocolo());
         parametros.put("transacao",comprovante.getProtocolo());
         parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
@@ -73,7 +80,7 @@ public class ComprovanteService {
     }
 
     public byte[] gerarComprovanteTransferenciaMesmaTitularidade(ComprovanteTransferenciaMesmaTitularidadeVo comprovante) throws Exception {
-        Map<String, String> parametros = new HashMap<String,String>();
+        Map<String, Object> parametros = new HashMap<String,Object>();
         parametros.put("protocolo",comprovante.getProtocolo());
         parametros.put("transacao",comprovante.getProtocolo());
         parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
@@ -89,7 +96,7 @@ public class ComprovanteService {
     }
 
     public byte[] gerarComprovanteTransferenciaOutraTitularidade(ComprovanteTransferenciaOutraTitularidadeVo comprovante) throws Exception {
-        Map<String, String> parametros = new HashMap<String,String>();
+        Map<String, Object> parametros = new HashMap<String,Object>();
         parametros.put("protocolo",comprovante.getProtocolo());
         parametros.put("transacao",comprovante.getProtocolo());
         parametros.put("cliente","LUCIA ALVES PEREIRA SILVA");
@@ -108,11 +115,11 @@ public class ComprovanteService {
         return String.format("%40s",texto.substring(0,Math.min(40,texto.length())));
     }
 
-    private byte[] comprovanteByteArray(String nomeChave, Map<String, String> parametros)  throws Exception {
+    private byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros)  throws Exception {
         String template = configuracaoRepository.findOne(nomeChave,GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
 
-        for (Map.Entry<String, String> entry : parametros.entrySet()) {
+        for (Map.Entry<String, Object> entry : parametros.entrySet()) {
             templateBuilder.setParametro(entry.getKey(), entry.getValue());
         }
         String conteudo=templateBuilder.getConteudo(template);

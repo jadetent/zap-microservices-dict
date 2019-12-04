@@ -2,6 +2,7 @@ package com.zap.contadigital.comprovantes.service;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
@@ -14,24 +15,17 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.springframework.stereotype.Service;
+
+@Service
 public class QRCodeService {
-    /*
-    public static void main(String[] args) throws WriterException, IOException {
-        String qrCodeText = "https://www.journaldev.com";
-        String filePath = "JD.png";
-        int size = 125;
-        String fileType = "png";
-        File qrFile = new File("c:\\dev", filePath);
-        createQRImage(qrFile, qrCodeText, size, fileType);
-        System.out.println("DONE");
-    }
-    */
-    private static void createQRImage(File qrFile, String qrCodeText, int size, String fileType)
+    public byte[] createQRImage(String qrCodeText)
             throws WriterException, IOException {
         // Create the ByteMatrix for the QR-Code that encodes the given String
         Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        int size = 125;
         BitMatrix byteMatrix = qrCodeWriter.encode(qrCodeText, BarcodeFormat.QR_CODE, size, size, hintMap);
         // Make the BufferedImage that are to hold the QRCode
         int matrixWidth = byteMatrix.getWidth();
@@ -51,7 +45,14 @@ public class QRCodeService {
                 }
             }
         }
-        ImageIO.write(image, fileType, qrFile);
+        //ImageIO.write(image, fileType, qrFile);
+        //return qrFile.getAbsolutePath();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write( image, "jpg", baos );
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+        return imageInByte;
     }
 
 }

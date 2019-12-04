@@ -1,6 +1,7 @@
 package com.zap.contadigital.comprovantes.controller;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.service.ComprovanteService;
+import com.zap.contadigital.comprovantes.service.QRCodeService;
 import com.zap.contadigital.comprovantes.vo.*;
 import com.zap.contadigital.vo.response.CustomErrorResponse;
 import io.swagger.annotations.ApiOperation;
@@ -12,13 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/comprovantes")
 public class ComprovanteController {
     @Autowired
     private ComprovanteService service;
 
+    @Autowired
+    private QRCodeService qrCodeService;
     @ApiOperation(value = "Comprovante de pagamento de Recarga de Celular", httpMethod = "GET",response = String.class)
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "Comprovante não localizado pelo id da transação", response = CustomErrorResponse.class),
@@ -30,7 +32,20 @@ public class ComprovanteController {
         comprovante.setIdTransacao(idTransacao);
         byte[] bytes = service.gerarComprovanteRecargaCelular(comprovante);
         return new ResponseEntity<>(bytes, HttpStatus.OK);
-       // return ResponseEntity.ok().body(bytes);
+        // return ResponseEntity.ok().body(bytes);
+    }
+
+    @GetMapping(path = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity< byte[]> qrCode() throws Exception {
+        String qrCodeText = "bit.ly/ZapGanhei5";
+        byte[] result=qrCodeService.createQRImage(qrCodeText);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/qrcode-template", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity< byte[]> qrCodeTemplate() throws Exception {
+        byte[] bytes = service.gerarQrCodeEstabelecimento("bit.ly/ZapGanhei5");
+        return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Comprovante de Pagamentos", httpMethod = "GET",response = String.class)
@@ -49,7 +64,6 @@ public class ComprovanteController {
         }catch (TransacaoNaoLocalizadaException tnle){
             return ResponseEntity.notFound().build();
         }
-
     }
 
     @ApiOperation(value = "Comprovante de Transferências P2P", httpMethod = "GET",response = String.class)
