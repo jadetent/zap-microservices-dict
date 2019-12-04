@@ -38,7 +38,7 @@ public class ComprovanteController {
     @GetMapping(path = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity< byte[]> qrCode() throws Exception {
         String qrCodeText = "bit.ly/ZapGanhei5";
-        byte[] result=qrCodeService.createQRImage(qrCodeText);
+        byte[] result=qrCodeService.createQRCode(qrCodeText);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

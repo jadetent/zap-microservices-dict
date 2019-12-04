@@ -1,6 +1,7 @@
 package com.zap.contadigital.comprovantes.service;
 
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.kernel.xmp.impl.Base64;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import com.zap.contadigital.comprovantes.vo.*;
@@ -20,8 +21,10 @@ public class ComprovanteService {
     private final String GRUPO="ZAP-COMPROVANTES";
     public byte[] gerarQrCodeEstabelecimento(String conteudo) throws Exception {
         Map<String, Object> parametros = new HashMap<String,Object>();
-        byte[] qrCode=qrCodeService.createQRImage(conteudo);
-        parametros.put("qrcode", "c:\\dev\\zap.png");
+        byte[] qrCode=qrCodeService.createQRCode(conteudo);
+        File file = qrCodeService.createQRCodeFile(conteudo);
+        parametros.put("qrcode", file.getAbsolutePath());
+        parametros.put("base64", Base64.encode(qrCode));
         return comprovanteByteArray("ESTABELECIMENTO_QRCODE", parametros);
     }
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
