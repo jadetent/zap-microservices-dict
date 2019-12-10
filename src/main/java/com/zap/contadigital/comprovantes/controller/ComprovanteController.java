@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -34,14 +35,26 @@ public class ComprovanteController {
         return new ResponseEntity<>(bytes, HttpStatus.OK);
         // return ResponseEntity.ok().body(bytes);
     }
-
-    @GetMapping(path = "/qrcode-templates/{cnpj}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<Void> qrCodeTempletes(@PathVariable("cnpj") String cnpj) throws Exception {
-        String qrCodeText = "bit.ly/ZapGanhei5";
-        List<byte[]> result=service.gerarEstabelecimentoQrCodes(cnpj, qrCodeText);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @ApiOperation(value = "Lista dos templates associados para um estabelecimento", response = QRCodeEstabelecimento.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "HttpStatus 400 = Falhas na consulta do template. \n"),
+            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.")
+    })
+    @GetMapping(path = "/qrcode-estabelecimento/{cnpj}/{conteudo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<QRCodeEstabelecimento>> qrCodeEstabelecimento(@PathVariable("cnpj") String cnpj,@PathVariable("conteudo") String conteudo) throws Exception {
+        List<QRCodeEstabelecimento> result=service.gerarEstabelecimentoQrCodes(cnpj, conteudo);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
+    @ApiOperation(value = "Geração do pdf de acordo com o template e conteúdo recebido", httpMethod = "POST", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "HttpStatus 400 = Falhas na geração do PDF. \n"),
+            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.")
+    })
+    @PostMapping(path = "/qrcode-estabelecimento", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> qrCodeEstabelecimento(@RequestBody QRCodeEstabelecimento record) throws Exception {
+        byte[] bytes = service.gerarQrCode(record.getTemplate(),record.getConteudo());
+        return new ResponseEntity<>(bytes, HttpStatus.OK);
+    }
     @GetMapping(path = "/qrcode-template", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity< byte[]> qrCodeTemplate() throws Exception {
         byte[] bytes = service.gerarQrCodeContaZap("bit.ly/ZapGanhei5");

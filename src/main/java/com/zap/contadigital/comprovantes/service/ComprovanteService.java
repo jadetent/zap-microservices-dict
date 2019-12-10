@@ -20,9 +20,12 @@ public class ComprovanteService {
     @Autowired
     private QRCodeService qrCodeService;
     private final String GRUPO="ZAP-COMPROVANTES";
-    public List<byte[]> gerarEstabelecimentoQrCodes(String cnpj, String conteudo) throws Exception {
-        List<byte[]> lista = new ArrayList<byte[]>();
-        listarTemplates(cnpj);
+    public List<QRCodeEstabelecimento> gerarEstabelecimentoQrCodes(String cnpj, String conteudo) throws Exception {
+        final List<QRCodeEstabelecimento> lista = new ArrayList<QRCodeEstabelecimento>();
+        List<Configuracao> configuracoes=listarTemplates(cnpj);
+        configuracoes.forEach(c->{
+            lista.add(new QRCodeEstabelecimento(c.getChave(),conteudo));
+        });
         return lista;
     }
     public List<Configuracao> listarTemplates(String cnpj){
