@@ -1,6 +1,7 @@
 package com.zap.contadigital.comprovantes.service;
 
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.zap.contadigital.comprovantes.enums.ConfiguracaoTemplate;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import com.zap.contadigital.comprovantes.vo.*;
@@ -8,6 +9,7 @@ import com.zap.contadigital.repository.ConfiguracaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.io.*;
 import java.util.Base64;
 import java.util.HashMap;
@@ -19,17 +21,15 @@ public class ComprovanteService {
     private ConfiguracaoRepository configuracaoRepository;
     @Autowired
     private QRCodeService qrCodeService;
-    @Value("${imagem}")
-    private String imagem;
     private final String GRUPO="ZAP-COMPROVANTES";
     public byte[] gerarQrCodeEstabelecimento(String conteudo) throws Exception {
         Map<String, Object> parametros = new HashMap<String,Object>();
         byte[] qrCode=qrCodeService.createQRCode(conteudo);
-        File file = qrCodeService.createQRCodeFile(conteudo);
-        parametros.put("qrcode", file.getAbsolutePath());
+        //File file = qrCodeService.createQRCodeFile(conteudo);
+        //parametros.put("qrcode", file.getAbsolutePath());
         //parametros.put("base64", "data:image/jpeg;base64," + imagem);
-        parametros.put("base64", "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(qrCode));
-        return comprovanteByteArray("ESTABELECIMENTO_QRCODE", parametros);
+        parametros.put("imagem", "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(qrCode));
+        return comprovanteByteArray(ConfiguracaoTemplate.CONTAZAP_QRCODE_ESTATICO, parametros);
     }
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
         if(comprovante.getIdTransacao().equals("999"))
@@ -49,7 +49,7 @@ public class ComprovanteService {
         parametros.put("documento","12345678");
         parametros.put("data","22/11/19");
         parametros.put("valor","R$ 35,00");
-        return comprovanteByteArray("COMPROVANTE_RECARGA_CELULAR", parametros);
+        return comprovanteByteArray(ConfiguracaoTemplate.COMPROVANTE_RECARGA_CELULAR, parametros);
     }
     public byte[] gerarComprovantePagamento(ComprovantePagamentoVo comprovante) throws Exception {
         Map<String, Object> parametros = new HashMap<String,Object>();
@@ -71,7 +71,7 @@ public class ComprovanteService {
         parametros.put("dataPagamento",alinhamento("21/11/2019"));
         parametros.put("valorTitulo",alinhamento("20,00"));
         parametros.put("valorCobrado",alinhamento("20,00"));
-        return comprovanteByteArray("COMPROVANTE_PAGAMENTO", parametros);
+        return comprovanteByteArray(ConfiguracaoTemplate.COMPROVANTE_PAGAMENTO, parametros);
     }
 
     public byte[] gerarComprovanteTransferenciaP2p(ComprovanteTransferenciaP2PVo comprovante) throws Exception {
@@ -83,7 +83,7 @@ public class ComprovanteService {
         parametros.put("telefone",alinhamento("(11) - 98564 - 1574"));
         parametros.put("data",alinhamento("22/11/2019"));
         parametros.put("valor",alinhamento("20,00"));
-        return comprovanteByteArray("COMPROVANTE_P2P", parametros);
+        return comprovanteByteArray(ConfiguracaoTemplate.COMPROVANTE_P2P, parametros);
     }
 
     public byte[] gerarComprovanteTransferenciaMesmaTitularidade(ComprovanteTransferenciaMesmaTitularidadeVo comprovante) throws Exception {
@@ -99,7 +99,7 @@ public class ComprovanteService {
         parametros.put("cpfCnpjFavorecido","123.456.789-10");
         parametros.put("valor","R$ 100,00");
         parametros.put("data","22/11/2019");
-        return comprovanteByteArray("COMPROVANTE_MESMA_TITULARIDADE", parametros);
+        return comprovanteByteArray(ConfiguracaoTemplate.COMPROVANTE_MESMA_TITULARIDADE, parametros);
     }
 
     public byte[] gerarComprovanteTransferenciaOutraTitularidade(ComprovanteTransferenciaOutraTitularidadeVo comprovante) throws Exception {
@@ -115,15 +115,15 @@ public class ComprovanteService {
         parametros.put("cpfCnpjFavorecido","123.456.789-11");
         parametros.put("valor","R$ 100,00");
         parametros.put("data","22/11/2019");
-        return comprovanteByteArray("COMPROVANTE_OUTRA_TITULARIDADE", parametros);
+        return comprovanteByteArray(ConfiguracaoTemplate.COMPROVANTE_OUTRA_TITULARIDADE, parametros);
     }
 
     private String alinhamento(String texto){
         return String.format("%40s",texto.substring(0,Math.min(40,texto.length())));
     }
 
-    private byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros)  throws Exception {
-        String template = configuracaoRepository.findOne(nomeChave,GRUPO).getValor();
+    private byte[] comprovanteByteArray(ConfiguracaoTemplate nomeChave, Map<String, Object> parametros)  throws Exception {
+        String template = configuracaoRepository.findOne(nomeChave.name(),GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
 
         for (Map.Entry<String, Object> entry : parametros.entrySet()) {
