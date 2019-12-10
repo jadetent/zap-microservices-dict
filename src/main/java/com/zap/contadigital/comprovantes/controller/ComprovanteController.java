@@ -13,14 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/comprovantes")
 public class ComprovanteController {
     @Autowired
     private ComprovanteService service;
 
-    @Autowired
-    private QRCodeService qrCodeService;
     @ApiOperation(value = "Comprovante de pagamento de Recarga de Celular", httpMethod = "GET",response = String.class)
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "Comprovante não localizado pelo id da transação", response = CustomErrorResponse.class),
@@ -35,16 +35,16 @@ public class ComprovanteController {
         // return ResponseEntity.ok().body(bytes);
     }
 
-    @GetMapping(path = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity< byte[]> qrCode() throws Exception {
+    @GetMapping(path = "/qrcode-templates/{cnpj}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<Void> qrCodeTempletes(@PathVariable("cnpj") String cnpj) throws Exception {
         String qrCodeText = "bit.ly/ZapGanhei5";
-        byte[] result=qrCodeService.createQRCode(qrCodeText);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        List<byte[]> result=service.gerarEstabelecimentoQrCodes(cnpj, qrCodeText);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(path = "/qrcode-template", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity< byte[]> qrCodeTemplate() throws Exception {
-        byte[] bytes = service.gerarQrCodeEstabelecimento("bit.ly/ZapGanhei5");
+        byte[] bytes = service.gerarQrCodeContaZap("bit.ly/ZapGanhei5");
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
 
