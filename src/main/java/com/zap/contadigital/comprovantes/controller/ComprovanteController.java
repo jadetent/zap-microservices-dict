@@ -33,7 +33,6 @@ public class ComprovanteController {
         comprovante.setIdTransacao(idTransacao);
         byte[] bytes = service.gerarComprovanteRecargaCelular(comprovante);
         return new ResponseEntity<>(bytes, HttpStatus.OK);
-        // return ResponseEntity.ok().body(bytes);
     }
     @ApiOperation(value = "Lista dos templates associados para um estabelecimento", response = QRCodeEstabelecimento.class)
     @ApiResponses(value = {
