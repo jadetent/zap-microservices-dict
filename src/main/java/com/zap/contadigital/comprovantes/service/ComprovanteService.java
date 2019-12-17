@@ -50,26 +50,26 @@ public class ComprovanteService {
     private List<String> listarTemplates(String cnpj) throws Exception {
         final List<String> lista = new ArrayList<String>();
         List<Configuracao> configuracoes = listarConfiguracaoTemplates(cnpj);
+
         configuracoes.forEach(c -> {
             lista.add(c.getChave());
         });
-        if(lista.isEmpty())
-            throw  new TemplateNaoLocalizadoException();
+
         return lista;
     }
 
     private List<QRCodeEstabelecimento> gerarEstabelecimentoQrCodes(String cnpj, String conteudo) throws Exception {
         final List<QRCodeEstabelecimento> lista = new ArrayList<QRCodeEstabelecimento>();
         List<Configuracao> configuracoes = listarConfiguracaoTemplates(cnpj);
+
         configuracoes.forEach(c -> {
             lista.add(new QRCodeEstabelecimento(c.getChave(), conteudo));
         });
-        if(lista.isEmpty())
-            throw  new TemplateNaoLocalizadoException();
+
         return lista;
     }
 
-    private List<Configuracao> listarConfiguracaoTemplates(String cnpj) {
+    private List<Configuracao> listarConfiguracaoTemplates(String cnpj) throws Exception {
         EstabelecimentoTemplate template = null;
         for (EstabelecimentoTemplate estabelecimento : EstabelecimentoTemplate.values()) {
             Configuracao config = configuracaoRepository.findOne(estabelecimento.name(), GRUPO);
@@ -78,6 +78,9 @@ public class ComprovanteService {
                 break;
             }
         }
+        if (template == null)
+            throw new TemplateNaoLocalizadoException();
+
         List<Configuracao> templates = configuracaoRepository.findByChaveLike(template.getGrupoTemplate());
         return templates;
     }
