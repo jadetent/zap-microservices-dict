@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.server.PathParam;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/comprovantes")
@@ -35,27 +37,16 @@ public class ComprovanteController {
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Lista dos templates associados para um estabelecimento", response = QRCodeEstabelecimento.class)
+    @ApiOperation(value = "Geração do pdf com o template e conteúdo para QRCode de estabelecimento", httpMethod = "POST", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "HttpStatus 400 = Falhas na consulta do template. \n"),
+            @ApiResponse(code = 400, message = "HttpStatus 400 = Falhas do Produto. \n" +
+                    "Código da falha: 422.001 = Erro na geração do documento.\n"
+            ),
             @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.")
     })
-    @GetMapping(path = "/qrcode-estabelecimento/{cnpj}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<QRCodeEstabelecimento>> qrCodeEstabelecimento(@PathVariable("cnpj") String cnpj, @PathParam("conteudo") String conteudo) throws Exception {
-        List<QRCodeEstabelecimento> result = service.gerarEstabelecimentoQrCodes(cnpj, conteudo);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "Geração do pdf de acordo com o template e conteúdo recebido", httpMethod = "POST", response = Object.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "HttpStatus 400 = Falhas na geração do PDF. \n"),
-            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.")
-    })
-    @PostMapping(path = "/qrcode-estabelecimento", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<byte[]> qrCodeEstabelecimento(@RequestBody QRCodeEstabelecimento record) throws Exception {
-        //byte[] bytes = service.gerarQrCode(record.getTemplate(), record.getConteudo());
-        byte[] bytes = service.comprovanteByteArrayManyPage();
-
+    @GetMapping(path = "/qrcode-estabelecimento/{cnpj}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> qrCodeEstabelecimento(@PathVariable("cnpj") String cnpj, @PathParam("conteudo") String conteudo) throws Exception {
+        byte[] bytes = service.gerarTotenEstabelecimento(cnpj, conteudo);
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
 

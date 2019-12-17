@@ -8,6 +8,7 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.utils.PdfMerger;
 import com.zap.contadigital.comprovantes.enums.EstabelecimentoTemplate;
+import com.zap.contadigital.comprovantes.exception.GeracaoDocumentoException;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import com.zap.contadigital.comprovantes.vo.*;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 @Service
@@ -27,16 +29,42 @@ public class ComprovanteService {
     private QRCodeService qrCodeService;
     private final String GRUPO = "ZAP-COMPROVANTES";
 
-    public List<QRCodeEstabelecimento> gerarEstabelecimentoQrCodes(String cnpj, String conteudo) throws Exception {
+    public byte[] gerarTotenEstabelecimento(String cnpj, String conteudo) throws Exception {
+        try {
+            Map<String, Object> parametros = new HashMap<String, Object>();
+            byte[] qrCode = qrCodeService.createQRCode(conteudo);
+            parametros.put("imagem", "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(qrCode));
+            List<String> templates = listarTemplates(cnpj);
+            List<String> comprovantes = new ArrayList<String>();
+            for (String e : templates) {
+                String comprovante = gerarComprovante(e, parametros);
+                comprovantes.add(comprovante);
+            }
+            return createByteArray(comprovantes);
+        } catch (IOException e) {
+            throw new GeracaoDocumentoException();
+        }
+    }
+
+    private List<String> listarTemplates(String cnpj) throws Exception {
+        final List<String> lista = new ArrayList<String>();
+        List<Configuracao> configuracoes = listarConfiguracaoTemplates(cnpj);
+        configuracoes.forEach(c -> {
+            lista.add(c.getChave());
+        });
+        return lista;
+    }
+
+    private List<QRCodeEstabelecimento> gerarEstabelecimentoQrCodes(String cnpj, String conteudo) throws Exception {
         final List<QRCodeEstabelecimento> lista = new ArrayList<QRCodeEstabelecimento>();
-        List<Configuracao> configuracoes = listarTemplates(cnpj);
+        List<Configuracao> configuracoes = listarConfiguracaoTemplates(cnpj);
         configuracoes.forEach(c -> {
             lista.add(new QRCodeEstabelecimento(c.getChave(), conteudo));
         });
         return lista;
     }
 
-    public List<Configuracao> listarTemplates(String cnpj) {
+    private List<Configuracao> listarConfiguracaoTemplates(String cnpj) {
         EstabelecimentoTemplate template = null;
         for (EstabelecimentoTemplate estabelecimento : EstabelecimentoTemplate.values()) {
             Configuracao config = configuracaoRepository.findOne(estabelecimento.name(), GRUPO);
@@ -155,49 +183,42 @@ public class ComprovanteService {
         return String.format("%40s", texto.substring(0, Math.min(40, texto.length())));
     }
 
-    public byte[] comprovanteByteArrayManyPage() throws Exception {
+
+    private byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros) throws Exception {
+        String conteudo = gerarComprovante(nomeChave, parametros);
         System.getenv("ITEXT7_LICENSEKEY" + "/itextkey-html2pdf_typography.xml");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        TemplateBuilder templateBuilder = new TemplateBuilder();
-        String[] conteudos = new String []{"<html><body><h1>Ola mundo 1</h1></body></html>","<html><body><h1>Ola mundo 2</h1></body></html>","<html><body><h1>Ola mundo 3</h1></body></html>"};
         try {
-            createByteArray(outputStream,conteudos);
+            createByteArray(conteudo.toString(), outputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new GeracaoDocumentoException();
         }
         return outputStream.toByteArray();
+    }
+
+    private String gerarComprovante(String nomeChave, Map<String, Object> parametros) throws Exception {
+        String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
+        TemplateBuilder templateBuilder = new TemplateBuilder();
+        for (Map.Entry<String, Object> entry : parametros.entrySet()) {
+            templateBuilder.setParametro(entry.getKey(), entry.getValue());
+        }
+        String conteudo = templateBuilder.getConteudo(template);
+        return conteudo;
     }
 
     private void createByteArray(String html, OutputStream outputStream) throws IOException {
         HtmlConverter.convertToPdf(html, outputStream);
     }
 
-    private byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros) throws Exception {
-        String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
-        TemplateBuilder templateBuilder = new TemplateBuilder();
-
-        for (Map.Entry<String, Object> entry : parametros.entrySet()) {
-            templateBuilder.setParametro(entry.getKey(), entry.getValue());
-        }
-        String conteudo = templateBuilder.getConteudo(template);
-        System.getenv("ITEXT7_LICENSEKEY" + "/itextkey-html2pdf_typography.xml");
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            createByteArray(conteudo.toString(), outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return outputStream.toByteArray();
-    }
-
-
-    private void createByteArray(OutputStream outputStream,String ... htmls) throws IOException {
+    private byte[] createByteArray(List<String> comprovantes) throws IOException {
+        String tempDir = System.getProperty("java.io.tmpdir");
         ConverterProperties properties = new ConverterProperties();
-        properties.setBaseUri("c:\\dev\\");
-        PdfWriter writer = new PdfWriter("c:\\dev\\toten.pdf");
+        properties.setBaseUri(tempDir);
+        File tempFile = new File(tempDir, "qrcode" + new Date().getTime() + ".pdf");
+        PdfWriter writer = new PdfWriter(tempFile);
         PdfDocument pdf = new PdfDocument(writer);
         PdfMerger merger = new PdfMerger(pdf);
-        for (String html : htmls) {
+        for (String html : comprovantes) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             PdfDocument temp = new PdfDocument(new PdfWriter(baos));
             PageSize pageSize = PageSize.A4;
@@ -208,7 +229,11 @@ public class ComprovanteService {
             temp.close();
         }
         pdf.close();
+        byte[] bytes = Files.readAllBytes(tempFile.toPath());
+        tempFile.delete();
+        return bytes;
     }
+
     private String comprovanteFile(String nomeChave, Map<String, String> parametros) throws Exception {
         String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
@@ -232,7 +257,4 @@ public class ComprovanteService {
         HtmlConverter.convertToPdf(html, new FileOutputStream(dest));
     }
 
-    public static void main(String[] args) {
-
-    }
 }
