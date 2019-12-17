@@ -9,6 +9,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.utils.PdfMerger;
 import com.zap.contadigital.comprovantes.enums.EstabelecimentoTemplate;
 import com.zap.contadigital.comprovantes.exception.GeracaoDocumentoException;
+import com.zap.contadigital.comprovantes.exception.TemplateNaoLocalizadoException;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
 import com.zap.contadigital.comprovantes.vo.*;
@@ -52,6 +53,8 @@ public class ComprovanteService {
         configuracoes.forEach(c -> {
             lista.add(c.getChave());
         });
+        if(lista.isEmpty())
+            throw  new TemplateNaoLocalizadoException();
         return lista;
     }
 
@@ -61,6 +64,8 @@ public class ComprovanteService {
         configuracoes.forEach(c -> {
             lista.add(new QRCodeEstabelecimento(c.getChave(), conteudo));
         });
+        if(lista.isEmpty())
+            throw  new TemplateNaoLocalizadoException();
         return lista;
     }
 

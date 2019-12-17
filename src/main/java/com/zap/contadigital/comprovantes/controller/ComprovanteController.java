@@ -40,7 +40,8 @@ public class ComprovanteController {
     @ApiOperation(value = "Geração do pdf com o template e conteúdo para QRCode de estabelecimento", httpMethod = "POST", response = Object.class)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "HttpStatus 400 = Falhas do Produto. \n" +
-                    "Código da falha: 422.001 = Erro na geração do documento.\n"
+                    "Código da falha: 422.001 = Erro na geração do documento.\n" +
+                    "Código da falha: 422.002 = Template não localizado para este estabelecimento.\n"
             ),
             @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.")
     })
