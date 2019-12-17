@@ -1,6 +1,12 @@
 package com.zap.contadigital.comprovantes.service;
 
+import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.utils.PdfMerger;
 import com.zap.contadigital.comprovantes.enums.EstabelecimentoTemplate;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
@@ -10,10 +16,7 @@ import com.zap.contadigital.repository.ConfiguracaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 
 @Service
@@ -152,6 +155,23 @@ public class ComprovanteService {
         return String.format("%40s", texto.substring(0, Math.min(40, texto.length())));
     }
 
+    public byte[] comprovanteByteArrayManyPage() throws Exception {
+        System.getenv("ITEXT7_LICENSEKEY" + "/itextkey-html2pdf_typography.xml");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        TemplateBuilder templateBuilder = new TemplateBuilder();
+        String[] conteudos = new String []{"<html><body><h1>Ola mundo 1</h1></body></html>","<html><body><h1>Ola mundo 2</h1></body></html>","<html><body><h1>Ola mundo 3</h1></body></html>"};
+        try {
+            createByteArray(outputStream,conteudos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outputStream.toByteArray();
+    }
+
+    private void createByteArray(String html, OutputStream outputStream) throws IOException {
+        HtmlConverter.convertToPdf(html, outputStream);
+    }
+
     private byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros) throws Exception {
         String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
@@ -170,10 +190,25 @@ public class ComprovanteService {
         return outputStream.toByteArray();
     }
 
-    private void createByteArray(String html, OutputStream outputStream) throws IOException {
-        HtmlConverter.convertToPdf(html, outputStream);
-    }
 
+    private void createByteArray(OutputStream outputStream,String ... htmls) throws IOException {
+        ConverterProperties properties = new ConverterProperties();
+        properties.setBaseUri("c:\\dev\\");
+        PdfWriter writer = new PdfWriter("c:\\dev\\toten.pdf");
+        PdfDocument pdf = new PdfDocument(writer);
+        PdfMerger merger = new PdfMerger(pdf);
+        for (String html : htmls) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PdfDocument temp = new PdfDocument(new PdfWriter(baos));
+            PageSize pageSize = PageSize.A4;
+            temp.setDefaultPageSize(pageSize);
+            HtmlConverter.convertToPdf(html, temp, properties);
+            temp = new PdfDocument(new PdfReader(new ByteArrayInputStream(baos.toByteArray())));
+            merger.merge(temp, 1, temp.getNumberOfPages());
+            temp.close();
+        }
+        pdf.close();
+    }
     private String comprovanteFile(String nomeChave, Map<String, String> parametros) throws Exception {
         String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
@@ -195,5 +230,9 @@ public class ComprovanteService {
 
     private void createPdfFile(String html, String dest) throws IOException {
         HtmlConverter.convertToPdf(html, new FileOutputStream(dest));
+    }
+
+    public static void main(String[] args) {
+
     }
 }

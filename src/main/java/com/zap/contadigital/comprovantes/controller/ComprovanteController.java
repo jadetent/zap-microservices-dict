@@ -53,13 +53,9 @@ public class ComprovanteController {
     })
     @PostMapping(path = "/qrcode-estabelecimento", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> qrCodeEstabelecimento(@RequestBody QRCodeEstabelecimento record) throws Exception {
-        byte[] bytes = service.gerarQrCode(record.getTemplate(), record.getConteudo());
-        return new ResponseEntity<>(bytes, HttpStatus.OK);
-    }
+        //byte[] bytes = service.gerarQrCode(record.getTemplate(), record.getConteudo());
+        byte[] bytes = service.comprovanteByteArrayManyPage();
 
-    @GetMapping(path = "/qrcode-template", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<byte[]> qrCodeTemplate() throws Exception {
-        byte[] bytes = service.gerarQrCodeContaZap("bit.ly/ZapGanhei5");
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
 
