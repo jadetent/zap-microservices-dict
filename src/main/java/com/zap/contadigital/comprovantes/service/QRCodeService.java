@@ -1,13 +1,5 @@
 package com.zap.contadigital.comprovantes.service;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Hashtable;
-import javax.imageio.ImageIO;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -16,27 +8,38 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Hashtable;
+
 @Service
 public class QRCodeService {
     public byte[] createQRCode(String conteudo) throws WriterException, IOException {
         BufferedImage image = image(conteudo);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write( image, "jpg", baos );
+        ImageIO.write(image, "jpg", baos);
         baos.flush();
         byte[] imageInByte = baos.toByteArray();
         baos.close();
         return imageInByte;
     }
+
     public File createQRCodeFile(String conteudo) throws WriterException, IOException {
         File dir = new File("/dev/qrcode");
-        if(!dir.exists())
+        if (!dir.exists())
             dir.mkdirs();
-        File file = new File(dir,"qrcode-" + new Date().getTime() + ".jpg");
+        File file = new File(dir, "qrcode-" + new Date().getTime() + ".jpg");
         BufferedImage image = image(conteudo);
         ImageIO.write(image, "jpg", file);
         return file;
     }
-    public BufferedImage image(String conteudo) throws WriterException, IOException{
+
+    public BufferedImage image(String conteudo) throws WriterException, IOException {
         // Create the ByteMatrix for the QR-Code that encodes the given String
         Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
