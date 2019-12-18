@@ -38,7 +38,7 @@ public class ComprovanteService {
             List<String> templates = listarTemplates(cnpj);
             List<String> comprovantes = new ArrayList<String>();
             for (String e : templates) {
-                String comprovante = gerarComprovante(e, parametros);
+                String comprovante = gerarHtml(e, parametros);
                 comprovantes.add(comprovante);
             }
             return createByteArray(comprovantes);
@@ -193,7 +193,7 @@ public class ComprovanteService {
 
 
     private byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros) throws Exception {
-        String conteudo = gerarComprovante(nomeChave, parametros);
+        String conteudo = gerarHtml(nomeChave, parametros);
         System.getenv("ITEXT7_LICENSEKEY" + "/itextkey-html2pdf_typography.xml");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -204,14 +204,14 @@ public class ComprovanteService {
         return outputStream.toByteArray();
     }
 
-    private String gerarComprovante(String nomeChave, Map<String, Object> parametros) throws Exception {
+    private String gerarHtml(String nomeChave, Map<String, Object> parametros) throws Exception {
         String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
         TemplateBuilder templateBuilder = new TemplateBuilder();
         for (Map.Entry<String, Object> entry : parametros.entrySet()) {
             templateBuilder.setParametro(entry.getKey(), entry.getValue());
         }
-        String conteudo = templateBuilder.getConteudo(template);
-        return conteudo;
+        String html = templateBuilder.getConteudo(template);
+        return html;
     }
 
     private void createByteArray(String html, OutputStream outputStream) throws IOException {
