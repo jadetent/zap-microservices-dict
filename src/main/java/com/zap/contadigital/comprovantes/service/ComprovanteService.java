@@ -100,9 +100,6 @@ public class ComprovanteService {
     }
 
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
-        if (comprovante.getIdTransacao().equals("999"))
-            throw new TransacaoNaoLocalizadaException(comprovante.getIdTransacao());
-
         Map<String, Object> parametros = new HashMap<String, Object>();
         parametros.put("transacao", comprovante.getIdTransacao());
         parametros.put("protocolo", comprovante.getProtocolo());
