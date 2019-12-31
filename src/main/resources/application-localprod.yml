@@ -9,11 +9,11 @@ eureka:
   name: eureka
 
 database:
-  host: contazap-hml-db01.crasuwtpbtmk.us-east-1.rds.amazonaws.com
+  host: contazapspprod01.cp1f4greajkx.sa-east-1.rds.amazonaws.com
   port: 5432
   name: zap_webservices
-  username: contazaphm
-  password: JFJSgqq2LYmjQGp1KMG
+  username: dbacontazaptoor
+  password: f9QSpRGRBXUgrik7IjDYnWUs3
 
 endpoint:
   matera-server: https://contazap-mp-api.matera.com

@@ -1,11 +1,12 @@
 package com.zap.contadigital.comprovantes.exception;
 
-import com.zap.contadigital.exception.ContaException;
-import static com.zap.contadigital.enums.TipoInternalErrorCodesEnum.E422000;
+import com.zap.contadigital.enums.TipoInternalErrorCodesEnum;
 
-public class TransacaoNaoLocalizadaException extends ContaException {
+public class TransacaoNaoLocalizadaException extends ComprovanteException {
+
     public TransacaoNaoLocalizadaException(String idTransacao) {
-        super(E422000, idTransacao);
+        super(TipoInternalErrorCodesEnum.E422000, idTransacao);
     }
+
 }
 
