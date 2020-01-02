@@ -7,12 +7,14 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.utils.PdfMerger;
+import com.zap.contadigital.comprovantes.dto.ComprovantePagamentoDTO;
+import com.zap.contadigital.comprovantes.dto.ComprovanteTransferenciaMesmaTitularidadeDTO;
+import com.zap.contadigital.comprovantes.dto.ComprovanteTransferenciaOutraTitularidadeDTO;
+import com.zap.contadigital.comprovantes.dto.ComprovanteTransferenciaP2PDTO;
 import com.zap.contadigital.comprovantes.enums.EstabelecimentoTemplate;
 import com.zap.contadigital.comprovantes.exception.GeracaoDocumentoException;
 import com.zap.contadigital.comprovantes.exception.TemplateNaoLocalizadoException;
-import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
-import com.zap.contadigital.comprovantes.vo.*;
 import com.zap.contadigital.model.Configuracao;
 import com.zap.contadigital.repository.ConfiguracaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,29 +25,12 @@ import java.nio.file.Files;
 import java.util.*;
 
 @Service
-public class ComprovanteService {
+public abstract class ComprovanteService {
+
     @Autowired
     private ConfiguracaoRepository configuracaoRepository;
-    @Autowired
-    private QRCodeService qrCodeService;
-    private final String GRUPO = "ZAP-COMPROVANTES";
 
-    public byte[] gerarTotenEstabelecimento(String cnpj, String conteudo) throws Exception {
-        try {
-            Map<String, Object> parametros = new HashMap<String, Object>();
-            byte[] qrCode = qrCodeService.createQRCode(conteudo);
-            parametros.put("imagem", "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(qrCode));
-            List<String> templates = listarTemplates(cnpj);
-            List<String> comprovantes = new ArrayList<String>();
-            for (String e : templates) {
-                String comprovante = gerarHtml(e, parametros);
-                comprovantes.add(comprovante);
-            }
-            return createByteArray(comprovantes);
-        } catch (IOException e) {
-            throw new GeracaoDocumentoException();
-        }
-    }
+    private final String GRUPO = "ZAP-COMPROVANTES";
 
     private List<String> listarTemplates(String cnpj) throws Exception {
         final List<String> lista = new ArrayList<String>();
@@ -53,17 +38,6 @@ public class ComprovanteService {
 
         configuracoes.forEach(c -> {
             lista.add(c.getChave());
-        });
-
-        return lista;
-    }
-
-    private List<QRCodeEstabelecimento> gerarEstabelecimentoQrCodes(String cnpj, String conteudo) throws Exception {
-        final List<QRCodeEstabelecimento> lista = new ArrayList<QRCodeEstabelecimento>();
-        List<Configuracao> configuracoes = listarConfiguracaoTemplates(cnpj);
-
-        configuracoes.forEach(c -> {
-            lista.add(new QRCodeEstabelecimento(c.getChave(), conteudo));
         });
 
         return lista;
@@ -78,46 +52,16 @@ public class ComprovanteService {
                 break;
             }
         }
-        if (template == null)
+        if (template == null) {
             throw new TemplateNaoLocalizadoException();
+        }
 
-        List<Configuracao> templates = configuracaoRepository.findByChaveLike(template.getGrupoTemplate());
+        List<Configuracao> templates = null; // configuracaoRepository.findByChaveLike(template.getGrupoTemplate());
         return templates;
     }
 
-    public byte[] gerarQrCodeContaZap(String conteudo) throws Exception {
-        return gerarQrCode("CONTAZAP_QRCODE_ESTATICO", conteudo);
-    }
-
-    public byte[] gerarQrCode(String template, String conteudo) throws Exception {
-        Map<String, Object> parametros = new HashMap<String, Object>();
-        byte[] qrCode = qrCodeService.createQRCode(conteudo);
-        //File file = qrCodeService.createQRCodeFile(conteudo);
-        //parametros.put("qrcode", file.getAbsolutePath());
-        //parametros.put("base64", "data:image/jpeg;base64," + imagem);
-        parametros.put("imagem", "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(qrCode));
-        return comprovanteByteArray(template, parametros);
-    }
-
-    public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularVo comprovante) throws Exception {
-        Map<String, Object> parametros = new HashMap<String, Object>();
-        parametros.put("transacao", comprovante.getIdTransacao());
-        parametros.put("protocolo", comprovante.getProtocolo());
-        parametros.put("cliente", "LUCIA ALVES PEREIRA SILVA");
-        parametros.put("terminal", "228005");
-        parametros.put("agente", "238804");
-        parametros.put("autenticacao", "07656");
-        parametros.put("nsu", "610761");
-        parametros.put("produto", "TIM - SP");
-        parametros.put("cpfCnpj", "123.456.789-10");
-        parametros.put("telefone", "(11) 99801-1234");
-        parametros.put("documento", "12345678");
-        parametros.put("data", "22/11/19");
-        parametros.put("valor", "R$ 35,00");
-        return comprovanteByteArray("COMPROVANTE_RECARGA_CELULAR", parametros);
-    }
-
-    public byte[] gerarComprovantePagamento(ComprovantePagamentoVo comprovante) throws Exception {
+    //TODO Criar novo service para esse método
+    public byte[] gerarComprovantePagamento(ComprovantePagamentoDTO comprovante) throws Exception {
         Map<String, Object> parametros = new HashMap<String, Object>();
         parametros.put("protocolo", comprovante.getProtocolo());
         parametros.put("transacao", comprovante.getIdTransacao());
@@ -140,7 +84,8 @@ public class ComprovanteService {
         return comprovanteByteArray("COMPROVANTE_PAGAMENTO", parametros);
     }
 
-    public byte[] gerarComprovanteTransferenciaP2p(ComprovanteTransferenciaP2PVo comprovante) throws Exception {
+    //TODO Criar novo service para esse método
+    public byte[] gerarComprovanteTransferenciaP2p(ComprovanteTransferenciaP2PDTO comprovante) throws Exception {
         Map<String, Object> parametros = new HashMap<String, Object>();
         parametros.put("protocolo", comprovante.getProtocolo());
         parametros.put("transacao", comprovante.getProtocolo());
@@ -152,7 +97,8 @@ public class ComprovanteService {
         return comprovanteByteArray("COMPROVANTE_P2P", parametros);
     }
 
-    public byte[] gerarComprovanteTransferenciaMesmaTitularidade(ComprovanteTransferenciaMesmaTitularidadeVo comprovante) throws Exception {
+    //TODO Criar novo service para esse método
+    public byte[] gerarComprovanteTransferenciaMesmaTitularidade(ComprovanteTransferenciaMesmaTitularidadeDTO comprovante) throws Exception {
         Map<String, Object> parametros = new HashMap<String, Object>();
         parametros.put("protocolo", comprovante.getProtocolo());
         parametros.put("transacao", comprovante.getProtocolo());
@@ -168,7 +114,8 @@ public class ComprovanteService {
         return comprovanteByteArray("COMPROVANTE_MESMA_TITULARIDADE", parametros);
     }
 
-    public byte[] gerarComprovanteTransferenciaOutraTitularidade(ComprovanteTransferenciaOutraTitularidadeVo comprovante) throws Exception {
+    //TODO Criar novo service para esse método
+    public byte[] gerarComprovanteTransferenciaOutraTitularidade(ComprovanteTransferenciaOutraTitularidadeDTO comprovante) throws Exception {
         Map<String, Object> parametros = new HashMap<String, Object>();
         parametros.put("protocolo", comprovante.getProtocolo());
         parametros.put("transacao", comprovante.getProtocolo());
@@ -188,9 +135,15 @@ public class ComprovanteService {
         return String.format("%40s", texto.substring(0, Math.min(40, texto.length())));
     }
 
+    protected byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros) throws Exception {
+        String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
+        TemplateBuilder templateBuilder = new TemplateBuilder();
 
-    private byte[] comprovanteByteArray(String nomeChave, Map<String, Object> parametros) throws Exception {
-        String conteudo = gerarHtml(nomeChave, parametros);
+        for (Map.Entry<String, Object> entry : parametros.entrySet()) {
+            templateBuilder.setParametro(entry.getKey(), entry.getValue());
+        }
+        String conteudo = templateBuilder.getConteudo(template);
+
         System.getenv("ITEXT7_LICENSEKEY" + "/itextkey-html2pdf_typography.xml");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {

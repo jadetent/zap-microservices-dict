@@ -14,11 +14,21 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Hashtable;
+import java.util.*;
 
 @Service
-public class QRCodeService {
+public class QRCodeService extends ComprovanteService {
+
+    public byte[] gerarQrCodeEstabelecimento(String conteudo) throws Exception {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        byte[] qrCode = createQRCode(conteudo);
+        File file = createQRCodeFile(conteudo);
+        parametros.put("qrcode", file.getAbsolutePath());
+        //parametros.put("base64", "data:image/jpeg;base64," + imagem);
+        parametros.put("base64", "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(qrCode));
+        return comprovanteByteArray("ESTABELECIMENTO_QRCODE", parametros);
+    }
+
     public byte[] createQRCode(String conteudo) throws WriterException, IOException {
         BufferedImage image = image(conteudo);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -29,7 +39,7 @@ public class QRCodeService {
         return imageInByte;
     }
 
-    public File createQRCodeFile(String conteudo) throws WriterException, IOException {
+    private File createQRCodeFile(String conteudo) throws WriterException, IOException {
         File dir = new File("/dev/qrcode");
         if (!dir.exists())
             dir.mkdirs();
@@ -39,7 +49,7 @@ public class QRCodeService {
         return file;
     }
 
-    public BufferedImage image(String conteudo) throws WriterException, IOException {
+    private BufferedImage image(String conteudo) throws WriterException, IOException {
         // Create the ByteMatrix for the QR-Code that encodes the given String
         Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);

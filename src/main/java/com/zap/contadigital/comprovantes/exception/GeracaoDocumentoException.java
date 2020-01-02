@@ -1,12 +1,11 @@
 package com.zap.contadigital.comprovantes.exception;
 
-import com.zap.contadigital.exception.ContaException;
+import com.zap.contadigital.enums.TipoInternalErrorCodesEnum;
 
-import static com.zap.contadigital.enums.TipoInternalErrorCodesEnum.E422001;
+public class GeracaoDocumentoException extends ComprovanteException {
 
-public class GeracaoDocumentoException extends ContaException {
     public GeracaoDocumentoException() {
-        super(E422001);
+        super(TipoInternalErrorCodesEnum.E422001);
     }
 }
 

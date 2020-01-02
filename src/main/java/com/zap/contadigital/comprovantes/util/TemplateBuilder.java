@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.util.Properties;
 
 public class TemplateBuilder {
+
     private VelocityEngine velocityEngine;
     private VelocityContext context = new VelocityContext();
     private String template = "templates/comprovante.html";

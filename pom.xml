@@ -17,6 +17,13 @@
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
+        <!-- Core -->
+        <dependency>
+            <groupId>com.zap.contadigital</groupId>
+            <artifactId>zap-microservices-core</artifactId>
+            <version>1.0.3-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
@@ -26,12 +33,6 @@
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
             <version>3.3.2</version>
-        </dependency>
-        <!-- Core -->
-        <dependency>
-            <groupId>com.zap.contadigital</groupId>
-            <artifactId>zap-microservices-core</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -43,9 +44,7 @@
             <artifactId>html2pdf</artifactId>
             <version>2.1.5</version>
         </dependency>
-
     </dependencies>
-
     <build>
         <finalName>zap-comprovantes</finalName>
         <plugins>
