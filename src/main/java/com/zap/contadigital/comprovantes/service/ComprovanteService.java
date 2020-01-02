@@ -1,18 +1,28 @@
 package com.zap.contadigital.comprovantes.service;
 
+import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.zap.contadigital.comprovantes.dto.*;
-import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.utils.PdfMerger;
+import com.zap.contadigital.comprovantes.dto.ComprovantePagamentoDTO;
+import com.zap.contadigital.comprovantes.dto.ComprovanteTransferenciaMesmaTitularidadeDTO;
+import com.zap.contadigital.comprovantes.dto.ComprovanteTransferenciaOutraTitularidadeDTO;
+import com.zap.contadigital.comprovantes.dto.ComprovanteTransferenciaP2PDTO;
+import com.zap.contadigital.comprovantes.enums.EstabelecimentoTemplate;
+import com.zap.contadigital.comprovantes.exception.GeracaoDocumentoException;
+import com.zap.contadigital.comprovantes.exception.TemplateNaoLocalizadoException;
 import com.zap.contadigital.comprovantes.util.TemplateBuilder;
+import com.zap.contadigital.model.Configuracao;
 import com.zap.contadigital.repository.ConfiguracaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Files;
+import java.util.*;
 
 @Service
 public abstract class ComprovanteService {
@@ -20,10 +30,35 @@ public abstract class ComprovanteService {
     @Autowired
     private ConfiguracaoRepository configuracaoRepository;
 
-    @Value("${imagem}")
-    private String imagem;
+    private final String GRUPO = "ZAP-COMPROVANTES";
 
-    protected final String GRUPO = "ZAP-COMPROVANTES";
+    private List<String> listarTemplates(String cnpj) throws Exception {
+        final List<String> lista = new ArrayList<String>();
+        List<Configuracao> configuracoes = listarConfiguracaoTemplates(cnpj);
+
+        configuracoes.forEach(c -> {
+            lista.add(c.getChave());
+        });
+
+        return lista;
+    }
+
+    private List<Configuracao> listarConfiguracaoTemplates(String cnpj) throws Exception {
+        EstabelecimentoTemplate template = null;
+        for (EstabelecimentoTemplate estabelecimento : EstabelecimentoTemplate.values()) {
+            Configuracao config = configuracaoRepository.findOne(estabelecimento.name(), GRUPO);
+            if (config.getValor().contains(cnpj)) {
+                template = estabelecimento;
+                break;
+            }
+        }
+        if (template == null) {
+            throw new TemplateNaoLocalizadoException();
+        }
+
+        List<Configuracao> templates = null; // configuracaoRepository.findByChaveLike(template.getGrupoTemplate());
+        return templates;
+    }
 
     //TODO Criar novo service para esse método
     public byte[] gerarComprovantePagamento(ComprovantePagamentoDTO comprovante) throws Exception {
@@ -96,7 +131,6 @@ public abstract class ComprovanteService {
         return comprovanteByteArray("COMPROVANTE_OUTRA_TITULARIDADE", parametros);
     }
 
-
     private String alinhamento(String texto) {
         return String.format("%40s", texto.substring(0, Math.min(40, texto.length())));
     }
@@ -109,18 +143,53 @@ public abstract class ComprovanteService {
             templateBuilder.setParametro(entry.getKey(), entry.getValue());
         }
         String conteudo = templateBuilder.getConteudo(template);
+
         System.getenv("ITEXT7_LICENSEKEY" + "/itextkey-html2pdf_typography.xml");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             createByteArray(conteudo.toString(), outputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new GeracaoDocumentoException();
         }
         return outputStream.toByteArray();
     }
 
-    protected void createByteArray(String html, OutputStream outputStream) throws IOException {
+    private String gerarHtml(String nomeChave, Map<String, Object> parametros) throws Exception {
+        String template = configuracaoRepository.findOne(nomeChave, GRUPO).getValor();
+        TemplateBuilder templateBuilder = new TemplateBuilder();
+        for (Map.Entry<String, Object> entry : parametros.entrySet()) {
+            templateBuilder.setParametro(entry.getKey(), entry.getValue());
+        }
+        String html = templateBuilder.getConteudo(template);
+        return html;
+    }
+
+    private void createByteArray(String html, OutputStream outputStream) throws IOException {
         HtmlConverter.convertToPdf(html, outputStream);
+    }
+
+    private byte[] createByteArray(List<String> comprovantes) throws IOException {
+        String tempDir = System.getProperty("java.io.tmpdir");
+        ConverterProperties properties = new ConverterProperties();
+        properties.setBaseUri(tempDir);
+        File tempFile = new File(tempDir, "qrcode" + new Date().getTime() + ".pdf");
+        PdfWriter writer = new PdfWriter(tempFile);
+        PdfDocument pdf = new PdfDocument(writer);
+        PdfMerger merger = new PdfMerger(pdf);
+        for (String html : comprovantes) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PdfDocument temp = new PdfDocument(new PdfWriter(baos));
+            PageSize pageSize = PageSize.A4;
+            temp.setDefaultPageSize(pageSize);
+            HtmlConverter.convertToPdf(html, temp, properties);
+            temp = new PdfDocument(new PdfReader(new ByteArrayInputStream(baos.toByteArray())));
+            merger.merge(temp, 1, temp.getNumberOfPages());
+            temp.close();
+        }
+        pdf.close();
+        byte[] bytes = Files.readAllBytes(tempFile.toPath());
+        tempFile.delete();
+        return bytes;
     }
 
     private String comprovanteFile(String nomeChave, Map<String, String> parametros) throws Exception {
@@ -145,4 +214,5 @@ public abstract class ComprovanteService {
     private void createPdfFile(String html, String dest) throws IOException {
         HtmlConverter.convertToPdf(html, new FileOutputStream(dest));
     }
+
 }

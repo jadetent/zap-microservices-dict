@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/comprovantes")
+@RequestMapping("/v1/comprovantes")
 public class ComprovanteController {
 
     @Autowired
@@ -113,6 +113,5 @@ public class ComprovanteController {
         } catch (TransacaoNaoLocalizadaException tnle) {
             return ResponseEntity.notFound().build();
         }
-
     }
 }
