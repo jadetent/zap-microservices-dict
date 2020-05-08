@@ -3,6 +3,7 @@ package com.zap.contadigital.comprovantes.controller;
 import com.zap.contadigital.comprovantes.dto.*;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.service.ComprovanteService;
+import com.zap.contadigital.comprovantes.service.QRCodeService;
 import com.zap.contadigital.comprovantes.service.RecargaCelularService;
 import com.zap.contadigital.vo.response.CustomErrorResponse;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComprovanteController {
 
     @Autowired
-    private ComprovanteService service;
+    private QRCodeService service;
 
     @Autowired
     private RecargaCelularService recargaCelularService;
