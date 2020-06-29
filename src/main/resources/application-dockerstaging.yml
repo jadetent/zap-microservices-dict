@@ -1,0 +1,24 @@
+## Configuração Dev (Servidor de desenvolvimento) ##
+
+database:
+  host: 192.168.0.47
+  port: 5432
+  name: zap_webservices
+  username: contazaphm
+  password: JFJSgqq2LYmjQGp1KMG
+
+endpoint:
+  matera-server: https://contazap-mp-api-hmg.matera.com
+  matera-edge: https://contazap-mp-edge-hmg.matera.com
+
+encrypt:
+  api-access-key: 5459FAE2-6BFD-4E24-AA5D-FD1C084AF80C
+  secret-Key: 959A8596-752F-4771-9BD9-642C68B906A9
+
+logging:
+  level:
+    root: INFO
+    com.zap.contadigital: TRACE
+    com.sample.feign.demofeigncustomconfig: INFO
+    org.springframework.web.client: INFO
+    org.springframework.security.oauth2: INFO
