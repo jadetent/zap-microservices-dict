@@ -1,9 +1,13 @@
 ## Configuração Default da Aplicação ##
 
 server:
+  host: gateway
   port: 8086
 
 eureka:
+  host: discovery
+  port: 8081
+  name: eureka
   instance:
     prefer-ip-address: true
     statusPageUrlPath: http://${server.host}:${server.port}/actuator/info

@@ -1,0 +1,19 @@
+version: "3.3"
+services:
+  comprovantes:
+    container_name: comprovantes
+    image: czap/comprovantes:develop
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+      args:
+        - CORE_TAG=develop
+    environment:
+      - PROFILES=dockerlocal
+    ports:
+      - 8086:8086
+
+networks:
+  default:
+    external:
+      name: czap
