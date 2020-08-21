@@ -1,6 +1,6 @@
 package com.zap.contadigital.comprovantes.controller;
 
-import com.zap.contadigital.comprovantes.service.QRCodeService;
+import com.zap.contadigital.comprovantes.service.impl.QRCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

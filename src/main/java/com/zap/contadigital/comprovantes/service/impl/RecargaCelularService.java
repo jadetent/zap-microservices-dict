@@ -3,14 +3,14 @@ package com.zap.contadigital.comprovantes.service.impl;
 import com.zap.contadigital.comprovantes.dto.ComprovanteRecargaCelularDTO;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.service.ComprovanteService;
-import com.zap.contadigital.comprovantes.service.RecargaCelularService;
+import com.zap.contadigital.comprovantes.service.IRecargaCelularService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class RecargaCelularServiceImpl extends ComprovanteService implements RecargaCelularService {
+public class RecargaCelularService extends ComprovanteService implements IRecargaCelularService {
 
     public byte[] gerarComprovanteRecargaCelular(ComprovanteRecargaCelularDTO comprovante) throws Exception {
         if (comprovante.getIdTransacao().equals("999"))

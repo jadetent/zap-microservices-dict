@@ -1,4 +1,4 @@
-package com.zap.contadigital.comprovantes.service;
+package com.zap.contadigital.comprovantes.service.impl;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -6,6 +6,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.zap.contadigital.comprovantes.service.ComprovanteService;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;

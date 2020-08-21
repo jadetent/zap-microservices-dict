@@ -1,10 +1,13 @@
-package com.zap.contadigital.comprovantes.controller;
+package com.zap.contadigital.comprovantes.controller.impl;
 
 import com.zap.contadigital.comprovantes.dto.*;
+import com.zap.contadigital.comprovantes.dto.request.ComprovanteRequest;
+import com.zap.contadigital.comprovantes.dto.response.ComprovanteResponse;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
-import com.zap.contadigital.comprovantes.service.ComprovanteService;
-import com.zap.contadigital.comprovantes.service.QRCodeService;
-import com.zap.contadigital.comprovantes.service.RecargaCelularService;
+import com.zap.contadigital.comprovantes.service.IComprovanteService;
+import com.zap.contadigital.comprovantes.service.impl.ComprovanteService;
+import com.zap.contadigital.comprovantes.service.impl.QRCodeService;
+import com.zap.contadigital.comprovantes.service.IRecargaCelularService;
 import com.zap.contadigital.vo.response.CustomErrorResponse;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,21 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/comprovantes")
-public class ComprovanteController {
+public class ComprovanteController {//} implements IComprovanteService {
 
     @Autowired
     private QRCodeService service;
 
     @Autowired
-    private RecargaCelularService recargaCelularService;
+    private IRecargaCelularService IRecargaCelularService;
 
+    @Autowired
+    private ComprovanteService comprovanteService;
 
     @ApiOperation(value = "Comprovante de pagamento de Recarga de Celular", httpMethod = "GET", response = String.class)
     @ApiResponses(value = {
@@ -39,7 +43,7 @@ public class ComprovanteController {
 
         ComprovanteRecargaCelularDTO comprovante = new ComprovanteRecargaCelularDTO();
         comprovante.setIdTransacao(idTransacao);
-        byte[] bytes = recargaCelularService.gerarComprovanteRecargaCelular(comprovante);
+        byte[] bytes = IRecargaCelularService.gerarComprovanteRecargaCelular(comprovante);
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
 
@@ -114,5 +118,12 @@ public class ComprovanteController {
         } catch (TransacaoNaoLocalizadaException tnle) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/lista", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ComprovanteResponse> listarPagamentosRealizados(
+            @RequestBody @Valid ComprovanteRequest comprovanteRequest) throws Exception {
+        return new ResponseEntity(comprovanteService.listarPagamentosRealizados(comprovanteRequest), HttpStatus.OK);
     }
 }
