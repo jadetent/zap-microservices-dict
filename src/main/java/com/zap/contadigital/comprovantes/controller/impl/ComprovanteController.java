@@ -1,5 +1,6 @@
 package com.zap.contadigital.comprovantes.controller.impl;
 
+import com.zap.contadigital.comprovantes.controller.IComprovanteController;
 import com.zap.contadigital.comprovantes.dto.*;
 import com.zap.contadigital.comprovantes.dto.request.ComprovanteRequest;
 import com.zap.contadigital.comprovantes.dto.response.ComprovanteResponse;
@@ -22,7 +23,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/comprovantes")
-public class ComprovanteController {//} implements IComprovanteService {
+public class ComprovanteController implements IComprovanteController {
 
     @Autowired
     private QRCodeService service;
@@ -33,28 +34,18 @@ public class ComprovanteController {//} implements IComprovanteService {
     @Autowired
     private ComprovanteService comprovanteService;
 
-    @ApiOperation(value = "Comprovante de pagamento de Recarga de Celular", httpMethod = "GET", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Comprovante não localizado pelo id da transação", response = CustomErrorResponse.class),
-            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
-    })
+    @Override
     @GetMapping(path = "/{idTransacao}/recarga-celular", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> comprovanteRecargaCelular(@PathVariable("idTransacao") String idTransacao) throws Exception {
-
         ComprovanteRecargaCelularDTO comprovante = new ComprovanteRecargaCelularDTO();
         comprovante.setIdTransacao(idTransacao);
         byte[] bytes = IRecargaCelularService.gerarComprovanteRecargaCelular(comprovante);
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Comprovante de Pagamentos", httpMethod = "GET", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Transação não Localizada", response = CustomErrorResponse.class),
-            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
-    })
+    @Override
     @GetMapping(path = "/{idTransacao}/pagamento", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> comprovantePagamento(@PathVariable("idTransacao") String idTransacao) throws Exception {
-
         ComprovantePagamentoDTO comprovante = new ComprovantePagamentoDTO();
         comprovante.setIdTransacao(idTransacao);
         comprovante.setProtocolo("12348564");
@@ -66,11 +57,7 @@ public class ComprovanteController {//} implements IComprovanteService {
         }
     }
 
-    @ApiOperation(value = "Comprovante de Transferências P2P", httpMethod = "GET", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Transação não Localizada", response = CustomErrorResponse.class),
-            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
-    })
+    @Override
     @GetMapping(path = "/{idTransacao}/transferencia-p2p", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> comprovanteTransferenciaP2p(@PathVariable("idTransacao") String idTransacao) throws Exception {
 
@@ -84,11 +71,7 @@ public class ComprovanteController {//} implements IComprovanteService {
         }
     }
 
-    @ApiOperation(value = "Comprovante de Transferências de Mesma Titularidade", httpMethod = "GET", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Transação não Localizada", response = CustomErrorResponse.class),
-            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
-    })
+    @Override
     @GetMapping(path = "/{idTransacao}/transferencia-mesma-titularidade", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> comprovanteTransferenciaMesmaTitularidade(@PathVariable("idTransacao") String idTransacao) throws Exception {
 
@@ -102,11 +85,7 @@ public class ComprovanteController {//} implements IComprovanteService {
         }
     }
 
-    @ApiOperation(value = "Comprovante de Transferências de Outra Titularidade", httpMethod = "GET", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Transação não Localizada", response = CustomErrorResponse.class),
-            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
-    })
+    @Override
     @GetMapping(path = "/{idTransacao}/transferencia-outra-titularidade", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> comprovanteTransferenciaOutraTitularidade(@PathVariable("idTransacao") String idTransacao) throws Exception {
 
@@ -120,7 +99,7 @@ public class ComprovanteController {//} implements IComprovanteService {
         }
     }
 
-    @ResponseBody
+    @Override
     @PostMapping(value = "/lista", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ComprovanteResponse> listarPagamentosRealizados(
             @RequestBody @Valid ComprovanteRequest comprovanteRequest) throws Exception {
