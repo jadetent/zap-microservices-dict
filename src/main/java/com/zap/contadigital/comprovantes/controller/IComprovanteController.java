@@ -1,7 +1,9 @@
 package com.zap.contadigital.comprovantes.controller;
 
 import com.zap.contadigital.comprovantes.dto.request.ComprovanteRequest;
+import com.zap.contadigital.comprovantes.dto.request.ImagemRequest;
 import com.zap.contadigital.comprovantes.dto.response.ComprovanteResponse;
+import com.zap.contadigital.comprovantes.dto.response.ImagemResponse;
 import com.zap.contadigital.vo.response.CustomErrorResponse;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -58,5 +60,13 @@ public interface IComprovanteController {
     ResponseEntity<ComprovanteResponse> listarPagamentosRealizados(
             @ApiParam(name = "Informações da conta e do valor desejado", required = true)
             @RequestBody @Valid ComprovanteRequest comprovanteRequest) throws Exception;
+
+    @ApiOperation(value = "Gerar imagem do comprovante", response = ImagemResponse.class, httpMethod = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
+    })
+    ResponseEntity<ImagemResponse> gerarImagem(
+            @ApiParam(name = "Telefone e protocolo da transação", required = true)
+            @RequestBody @Valid ImagemRequest imagemRequest) throws Exception;
 
 }

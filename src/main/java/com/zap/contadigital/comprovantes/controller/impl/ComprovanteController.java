@@ -3,7 +3,9 @@ package com.zap.contadigital.comprovantes.controller.impl;
 import com.zap.contadigital.comprovantes.controller.IComprovanteController;
 import com.zap.contadigital.comprovantes.dto.*;
 import com.zap.contadigital.comprovantes.dto.request.ComprovanteRequest;
+import com.zap.contadigital.comprovantes.dto.request.ImagemRequest;
 import com.zap.contadigital.comprovantes.dto.response.ComprovanteResponse;
+import com.zap.contadigital.comprovantes.dto.response.ImagemResponse;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.service.IComprovanteService;
 import com.zap.contadigital.comprovantes.service.impl.ComprovanteService;
@@ -104,5 +106,12 @@ public class ComprovanteController implements IComprovanteController {
     public ResponseEntity<ComprovanteResponse> listarPagamentosRealizados(
             @RequestBody @Valid ComprovanteRequest comprovanteRequest) throws Exception {
         return new ResponseEntity(comprovanteService.listarPagamentosRealizados(comprovanteRequest), HttpStatus.OK);
+    }
+
+    @Override
+    @PostMapping(value = "/gerar-imagem", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ImagemResponse> gerarImagem(
+            @RequestBody @Valid ImagemRequest imagemRequest) {
+        return new ResponseEntity(comprovanteService.gerarImagem(imagemRequest), HttpStatus.OK);
     }
 }

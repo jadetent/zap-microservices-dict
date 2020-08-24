@@ -1,6 +1,7 @@
 package com.zap.contadigital.comprovantes.dto.response;
 
 import com.zap.contadigital.comprovantes.model.Comprovante;
+import com.zap.contadigital.model.recibos.ComprovanteModel;
 import lombok.*;
 
 import java.io.Serializable;
@@ -17,6 +18,6 @@ public class ComprovanteResponse implements Serializable {
 
     private String codigoPessoa;
 
-    private List<Comprovante> data;
+    private List<ComprovanteModel> data;
 
 }
