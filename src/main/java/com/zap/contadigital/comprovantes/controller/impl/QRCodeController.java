@@ -1,6 +1,7 @@
-package com.zap.contadigital.comprovantes.controller;
+package com.zap.contadigital.comprovantes.controller.impl;
 
-import com.zap.contadigital.comprovantes.service.QRCodeService;
+import com.zap.contadigital.comprovantes.controller.IQRCodeController;
+import com.zap.contadigital.comprovantes.service.impl.QRCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/comprovantes")
-public class QRCodeController {
+public class QRCodeController implements IQRCodeController {
 
     @Autowired
     private QRCodeService qrCodeService;
 
-
+    @Override
     @GetMapping(path = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> qrCode() throws Exception {
         String qrCodeText = "bit.ly/ZapGanhei5";
@@ -24,9 +25,11 @@ public class QRCodeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @Override
     @GetMapping(path = "/qrcode-template", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> qrCodeTemplate() throws Exception {
         byte[] bytes = qrCodeService.gerarQrCodeEstabelecimento("bit.ly/ZapGanhei5");
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
+
 }
