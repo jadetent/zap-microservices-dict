@@ -10,11 +10,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class ImagemRequest {
 
-    @ApiModelProperty(value = "Número do telefone", required = true, example = "5511999999999")
-    @NotNull
-    private String telefone;
-
-    @ApiModelProperty(value = "Protocolo da transação", required = true, example = "0003958517")
+    @ApiModelProperty(value = "Protocolo da transação", required = true, example = "0003958510")
     @NotNull
     private String protocolo;
 }
