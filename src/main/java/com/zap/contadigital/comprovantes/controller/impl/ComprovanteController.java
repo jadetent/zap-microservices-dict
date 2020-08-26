@@ -6,6 +6,7 @@ import com.zap.contadigital.comprovantes.dto.request.ComprovanteRequest;
 import com.zap.contadigital.comprovantes.dto.request.ImagemRequest;
 import com.zap.contadigital.comprovantes.dto.response.ComprovanteResponse;
 import com.zap.contadigital.comprovantes.dto.response.ImagemResponse;
+import com.zap.contadigital.comprovantes.exception.ProtocoloNaoEncontradoException;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
 import com.zap.contadigital.comprovantes.service.IComprovanteService;
 import com.zap.contadigital.comprovantes.service.impl.ComprovanteService;
@@ -111,7 +112,7 @@ public class ComprovanteController implements IComprovanteController {
     @Override
     @PostMapping(value = "/gerar-imagem", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ImagemResponse> gerarImagem(
-            @RequestBody @Valid ImagemRequest imagemRequest) {
+            @RequestBody @Valid ImagemRequest imagemRequest) throws ProtocoloNaoEncontradoException {
         return new ResponseEntity(comprovanteService.gerarImagem(imagemRequest), HttpStatus.OK);
     }
 }
