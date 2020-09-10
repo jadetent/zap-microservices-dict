@@ -20,7 +20,13 @@ public class QRCodeController implements IQRCodeController {
     @Override
     @GetMapping(path = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> qrCode() throws Exception {
-        String qrCodeText = "bit.ly/ZapGanhei5";
+        /**
+         * testes - geração de qr code
+         */
+
+        //String qrCodeText = "bit.ly/ZapGanhei5";
+        String qrCodeText = "00020101021126440014br.gov.bcb.spi0122fulano2019@example.com52 04000053039865802BR5913FULANO DE TAL6008BRASILIA6304DFE3";
+
         byte[] result = qrCodeService.createQRCode(qrCodeText);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

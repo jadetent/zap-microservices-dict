@@ -65,8 +65,8 @@ public interface IComprovanteController {
     @ApiResponses(value = {
             @ApiResponse(code = 500, message = "Código da falha: 500.000 = Erro interno sem causa mapeada.", response = CustomErrorResponse.class)
     })
-    ResponseEntity<ImagemResponse> gerarImagem(
-            @ApiParam(name = "Telefone e protocolo da transação", required = true)
+    ResponseEntity<String> gerarImagem(
+            @ApiParam(name = "Ptocolo da transação", required = true)
             @RequestBody @Valid ImagemRequest imagemRequest) throws Exception;
 
 }
