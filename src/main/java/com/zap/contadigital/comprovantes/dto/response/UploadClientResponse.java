@@ -1,12 +1,11 @@
 package com.zap.contadigital.comprovantes.dto.response;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ImagemResponse {
+public class UploadClientResponse {
+
     private String url;
 }

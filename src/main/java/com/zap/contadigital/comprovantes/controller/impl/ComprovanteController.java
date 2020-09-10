@@ -5,17 +5,11 @@ import com.zap.contadigital.comprovantes.dto.*;
 import com.zap.contadigital.comprovantes.dto.request.ComprovanteRequest;
 import com.zap.contadigital.comprovantes.dto.request.ImagemRequest;
 import com.zap.contadigital.comprovantes.dto.response.ComprovanteResponse;
-import com.zap.contadigital.comprovantes.dto.response.ImagemResponse;
 import com.zap.contadigital.comprovantes.exception.ProtocoloNaoEncontradoException;
 import com.zap.contadigital.comprovantes.exception.TransacaoNaoLocalizadaException;
-import com.zap.contadigital.comprovantes.service.IComprovanteService;
+import com.zap.contadigital.comprovantes.service.IRecargaCelularService;
 import com.zap.contadigital.comprovantes.service.impl.ComprovanteService;
 import com.zap.contadigital.comprovantes.service.impl.QRCodeService;
-import com.zap.contadigital.comprovantes.service.IRecargaCelularService;
-import com.zap.contadigital.vo.response.CustomErrorResponse;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/comprovantes")
@@ -111,8 +106,8 @@ public class ComprovanteController implements IComprovanteController {
 
     @Override
     @PostMapping(value = "/gerar-imagem", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ImagemResponse> gerarImagem(
-            @RequestBody @Valid ImagemRequest imagemRequest) throws ProtocoloNaoEncontradoException {
+    public ResponseEntity<String> gerarImagem(
+            @RequestBody @Valid ImagemRequest imagemRequest) throws ProtocoloNaoEncontradoException, IOException {
         return new ResponseEntity(comprovanteService.gerarImagem(imagemRequest), HttpStatus.OK);
     }
 }
