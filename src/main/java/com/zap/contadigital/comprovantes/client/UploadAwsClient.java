@@ -5,7 +5,7 @@ import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name ="uploadAwsClient", url = "http://192.168.0.100:3000/v1/upload")
+@FeignClient(name ="uploadAwsClient", url = "http://192.168.0.100:3000/v1")
 public interface UploadAwsClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/upload")
