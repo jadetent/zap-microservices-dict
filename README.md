@@ -1,12 +1,6 @@
-# Zap Microservices Comprovantes
+# Zap Microservices DICT
 
-
-O `Zap Microservices Comprovantes` é um serviço utilizado para requisições *HTTP* de *API RESTful*. As requisições são determinadas por meio de certos parâmetros e feitas pelo *bot* ao barramento.
-
-O objetivo é criar o comprovante de uma transação da conta dos usuários. Com base na necessidade de acessar as informações da conta de forma **segura** e **ágil**, a experiência do usuário ao realizar essa consulta é melhor quando usado o aplicativo *WhatsApp* em relação ao aplicativo da Conta Zap.
-
-### Fluxo
-
+O `Zap Microservices Dict` é um serviço utilizado para fazer operações sobre o endereçamento DICT, do Pix.
 
 #### Segurança
 

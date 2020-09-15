@@ -1,4 +1,4 @@
-package com.zap.contadigital.comprovantes.dto.response;
+package com.zap.contadigital.dict.dto.response;
 
 import lombok.*;
 

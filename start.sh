@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -jar -Dspring.profiles.active=${PROFILES} /app/target/zap-comprovantes.jar
+java -jar -Dspring.profiles.active=${PROFILES} /app/target/zap-dict.jar

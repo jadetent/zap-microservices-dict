@@ -1,6 +1,5 @@
-package com.zap.contadigital.comprovantes.dto.response;
+package com.zap.contadigital.dict.dto.response;
 
-import com.zap.contadigital.comprovantes.model.Comprovante;
 import com.zap.contadigital.model.recibos.ComprovanteModel;
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package com.zap.contadigital.comprovantes.model;
+package com.zap.contadigital.dict.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;

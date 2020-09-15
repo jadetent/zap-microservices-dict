@@ -18,10 +18,10 @@ import java.time.Duration;
 @EnableFeignClients
 @EnableCaching
 @SpringBootApplication
-public class ZapMicroservicesComprovantesApplication implements WebMvcConfigurer {
+public class ZapMicroservicesDictApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {
-        SpringApplication.run(ZapMicroservicesComprovantesApplication.class, args);
+        SpringApplication.run(ZapMicroservicesDictApplication.class, args);
     }
 
     @Override

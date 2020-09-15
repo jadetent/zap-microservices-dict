@@ -1,8 +1,8 @@
 version: "3.3"
 services:
-  comprovantes:
-    container_name: comprovantes
-    image: czap/comprovantes:develop
+  dict:
+    container_name: dict
+    image: czap/dict:develop
     build:
       dockerfile: ./Dockerfile
       context: .
@@ -11,7 +11,7 @@ services:
     environment:
       - PROFILES=dockerlocal
     ports:
-      - 8086:8086
+      - 8091:8091
 
 networks:
   default:

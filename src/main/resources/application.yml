@@ -2,7 +2,7 @@
 
 server:
   host: gateway
-  port: 8086
+  port: 8091
 
 eureka:
   host: discovery
@@ -21,7 +21,7 @@ eureka:
 
 spring:
   application:
-    name: zap-comprovantes
+    name: zap-dict
   jpa:
     show-sql: false
     properties:
@@ -61,4 +61,4 @@ info:
   app:
     name: ${spring.application.name}
     version: 1.0.0
-    description: Comprovantes
+    description: dict

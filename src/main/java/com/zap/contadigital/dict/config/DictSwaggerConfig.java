@@ -1,4 +1,4 @@
-package com.zap.contadigital.comprovantes.config;
+package com.zap.contadigital.dict.config;
 
 import com.zap.contadigital.doc.BaseSwaggerConfig;
 import org.springframework.context.annotation.Configuration;
@@ -8,10 +8,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Profile("!prod")
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig extends BaseSwaggerConfig {
+public class DictSwaggerConfig extends BaseSwaggerConfig {
 
-    public SwaggerConfig() {
-        super("com.zap.contadigital.comprovantes.controller");
+    public DictSwaggerConfig() {
+        super("com.zap.contadigital.dict.controller");
     }
 
 }

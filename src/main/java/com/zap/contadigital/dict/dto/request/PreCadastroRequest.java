@@ -1,14 +1,16 @@
-package com.zap.contadigital.comprovantes.dto.request;
+package com.zap.contadigital.dict.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class ComprovanteRequest {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PreCadastroRequest {
 
     @ApiModelProperty(value = "Número do telefone", required = true, example = "5511999999999")
     @NotNull
@@ -18,4 +20,7 @@ public class ComprovanteRequest {
     @NotNull
     private String codigoPessoa;
 
+    @ApiModelProperty(value = "email", required = true, example = "email@email.com")
+    @NotNull
+    private String email;
 }
